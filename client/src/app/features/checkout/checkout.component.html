@@ -1,0 +1,31 @@
+<div class="page">
+  <div class="card">
+    <ng-container *ngIf="plan; else unknown">
+    <span class="tag">Test Series</span>
+    <h1>{{ plan.name }}</h1>
+    <p class="muted">One-time payment. No subscription. Lifetime access.</p>
+    <p *ngIf="plan.description">{{ plan.description }}</p>
+
+    <ul>
+      <li *ngFor="let perk of plan.perks">✓ {{ perk }}</li>
+    </ul>
+
+    <p class="note">Every question is shown in <strong>English and Assamese</strong> together.</p>
+
+    <div class="total">
+      <span>Total</span>
+      <strong>₹{{ price ?? '-' }}</strong>
+    </div>
+
+    <button mat-flat-button color="primary" class="pay" [disabled]="paying || owned || price === null || !available || !state" (click)="pay()">
+      {{ owned ? 'Already purchased' : !available ? 'Not on sale' : paying ? 'Processing...' : 'Pay ₹' + price }}
+    </button>
+    <p class="muted small">Secure payment by Razorpay (UPI, cards, netbanking, wallets).</p>
+    <button mat-button [routerLink]="examLink">Back to {{ examLabel }}</button>
+    </ng-container>
+    <ng-template #unknown>
+      <h1>{{ pricing.error || (pricing.loaded ? 'Test Series not found' : 'Loading package...') }}</h1>
+      <button mat-button [routerLink]="examLink">Back to {{ examLabel }}</button>
+    </ng-template>
+  </div>
+</div>

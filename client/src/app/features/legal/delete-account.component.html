@@ -1,0 +1,57 @@
+<main class="legal-page">
+  <header class="legal-heading">
+    <span class="eyebrow">LET'S CRACK ADRE</span>
+    <h1>Delete your account</h1>
+    <p class="lead">You can request deletion without signing in. We verify access to the registered email before deleting an account.</p>
+  </header>
+
+  <section class="delete-panel" aria-live="polite">
+    <div *ngIf="stage === 'complete'" class="complete-state" role="status">
+      <h2>Account deletion complete</h2>
+      <p>Your account and associated learning records have been deleted from the application database. A pseudonymous deletion audit entry is configured to expire after 90 days; MongoDB TTL cleanup is asynchronous and may occur later. External payment-provider records, delivered emails, operational logs and backups are not removed by this action.</p>
+      <a routerLink="/privacy-policy">Read the Privacy Policy</a>
+    </div>
+
+    <ng-container *ngIf="stage !== 'complete'">
+      <h2>What deletion does</h2>
+      <p>After you verify the code sent to your registered email, we delete your account and its application records in one database transaction. This includes your profile, practice attempts and answers, scores, test history, pack purchases and payment records held by this application, reviews, question reports, refresh sessions and contact messages linked to the account email.</p>
+      <p>If you cannot access your registered email or need help with a deletion request, contact <a href="mailto:support@letscrackadre.com">support&#64;letscrackadre.com</a>.</p>
+      <ul>
+        <li>Deletion is performed after email verification; the request form alone does not delete anything.</li>
+        <li>A pseudonymous audit record is configured to expire after 90 days; MongoDB TTL cleanup is asynchronous and may occur later.</li>
+        <li>Razorpay, email recipients, infrastructure logs and backups may hold separate copies under their own or deployment retention settings. The application does not set a fixed expiry period for those copies.</li>
+      </ul>
+
+      <p class="form-message" *ngIf="infoMessage" role="status">{{ infoMessage }}</p>
+      <p class="form-error" *ngIf="errorMessage" role="alert">{{ errorMessage }}</p>
+
+      <form *ngIf="stage === 'request'" class="deletion-form" [formGroup]="requestForm" (ngSubmit)="requestCode()" novalidate>
+        <label for="deletion-email">Registered email address</label>
+        <input id="deletion-email" type="email" formControlName="email" autocomplete="email" maxlength="254" required />
+        <span class="field-error" *ngIf="requestForm.controls.email.touched && requestForm.controls.email.invalid">Enter a valid email address.</span>
+
+        <label class="consent" for="deletion-confirmation">
+          <input id="deletion-confirmation" type="checkbox" formControlName="confirmation" required />
+          <span>I understand that deletion removes my account and associated learning records and cannot be undone.</span>
+        </label>
+        <span class="field-error" *ngIf="requestForm.controls.confirmation.touched && requestForm.controls.confirmation.invalid">Confirm that you understand the consequences.</span>
+
+        <button type="submit" [disabled]="isSubmitting">{{ isSubmitting ? 'Sending request…' : 'Send verification code' }}</button>
+      </form>
+
+      <form *ngIf="stage === 'verify'" class="deletion-form" [formGroup]="verifyForm" (ngSubmit)="verifyAndDelete()" novalidate>
+        <p>Codes expire after 15 minutes. If you did not receive one, contact support or wait one minute before requesting another.</p>
+        <label for="deletion-code">Email verification code</label>
+        <input id="deletion-code" type="text" formControlName="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required />
+        <span class="field-error" *ngIf="verifyForm.controls.code.touched && verifyForm.controls.code.invalid">Enter the 6-digit code from the email. Codes expire after 15 minutes.</span>
+        <button type="submit" [disabled]="isSubmitting">{{ isSubmitting ? 'Verifying…' : 'Verify and delete account' }}</button>
+        <button type="button" class="secondary-button" [disabled]="isSubmitting" (click)="startOver()">Change email or request a new code</button>
+      </form>
+    </ng-container>
+  </section>
+
+  <nav class="legal-crosslinks" aria-label="Related pages">
+    <a routerLink="/privacy-policy">Read the Privacy Policy</a>
+    <a routerLink="/">Back to Let's Crack ADRE</a>
+  </nav>
+</main>

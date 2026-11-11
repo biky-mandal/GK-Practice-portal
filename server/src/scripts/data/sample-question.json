@@ -1,0 +1,60 @@
+{
+  "id": "GK-POLITY-0001",
+  "slug": "fundamental-rights-equality",
+  "schemaVersion": "1.0",
+  "status": "draft",
+  "version": 1,
+  "content": {
+    "title": "Fundamental Rights and Equality",
+    "questionText": {
+      "en": "Which of the following statements about equality before the law is correct?",
+      "as": "আইনৰ সন্মুখত সমতা সম্পৰ্কে তলত দিয়া কোনটো উক্তি শুদ্ধ?"
+    },
+    "questionType": "single_correct",
+    "language": "en",
+    "availableLanguages": ["en", "as"],
+    "options": [
+      { "id": "A", "text": { "en": "It is guaranteed under Article 14 of the Constitution.", "as": "ই সংবিধানৰ ১৪ নং অনুচ্ছেদৰ অধীনত নিশ্চিত কৰা হৈছে।" } },
+      { "id": "B", "text": { "en": "It is available only to Indian citizens.", "as": "ই কেৱল ভাৰতীয় নাগৰিকৰ বাবেহে উপলব্ধ।" } },
+      { "id": "C", "text": { "en": "It prohibits every form of legal classification.", "as": "ই আইনী শ্ৰেণীবিভাজনৰ সকলো ৰূপক নিষিদ্ধ কৰে।" } },
+      { "id": "D", "text": { "en": "It applies only during a national emergency.", "as": "ই কেৱল জাতীয় জৰুৰীকালীন অৱস্থাত প্ৰযোজ্য।" } }
+    ],
+    "tags": ["constitution", "fundamental-rights", "equality"]
+  },
+  "answerKey": {
+    "correctOptionIds": ["A"],
+    "explanation": {
+      "en": "Article 14 guarantees equality before the law and equal protection of the laws within the territory of India.",
+      "as": "১৪ নং অনুচ্ছেদে ভাৰতৰ ভূখণ্ডৰ ভিতৰত আইনৰ সন্মুখত সমতা আৰু আইনৰ সমান সুৰক্ষা নিশ্চিত কৰে।"
+    },
+    "commonMisconceptions": {
+      "en": ["Equality does not prohibit all reasonable classification."],
+      "as": ["সমতাই সকলো যুক্তিসংগত শ্ৰেণীবিভাজনক নিষিদ্ধ নকৰে।"]
+    },
+    "optionExplanations": [
+      { "optionId": "A", "isCorrect": true, "explanation": { "en": "Article 14 expressly provides these guarantees.", "as": "১৪ নং অনুচ্ছেদে এই নিশ্চয়তাসমূহ স্পষ্টভাৱে প্ৰদান কৰে।" } },
+      { "optionId": "B", "isCorrect": false, "explanation": { "en": "Article 14 applies to every person, not only citizens.", "as": "১৪ নং অনুচ্ছেদ কেৱল নাগৰিকৰ বাবে নহয়, প্ৰতিজন ব্যক্তিৰ বাবে প্ৰযোজ্য।" } },
+      { "optionId": "C", "isCorrect": false, "explanation": { "en": "Reasonable classification is permissible if constitutional requirements are met.", "as": "সাংবিধানিক চৰ্তসমূহ পূৰণ হ'লে যুক্তিসংগত শ্ৰেণীবিভাজন অনুমোদিত।" } },
+      { "optionId": "D", "isCorrect": false, "explanation": { "en": "Article 14 is not limited to national emergencies.", "as": "১৪ নং অনুচ্ছেদ কেৱল জাতীয় জৰুৰীকালীন অৱস্থাতে সীমাবদ্ধ নহয়।" } }
+    ]
+  },
+  "classification": {
+    "examCategories": ["UPSC", "APSC"],
+    "exams": ["ADRE 3.0"],
+    "categories": ["Polity"],
+    "subjects": ["Indian Polity"],
+    "topics": ["Fundamental Rights"],
+    "subtopics": ["Right to Equality"],
+    "difficulty": "medium",
+    "cognitiveLevel": "application"
+  },
+  "questionFormat": { "answerMode": "single" },
+  "evaluation": { "marksCorrect": 1, "marksIncorrect": 0, "maxMarks": 1, "evaluationMethod": "automatic" },
+  "learning": { "learningObjective": "Understand the scope of Article 14." },
+  "references": {
+    "primarySources": [
+      { "title": "Constitution of India", "publisher": "Government of India", "section": "Article 14" }
+    ]
+  },
+  "workflow": { "reviewStatus": "pending" }
+}

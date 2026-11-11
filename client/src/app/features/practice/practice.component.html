@@ -1,0 +1,179 @@
+<div class="page-shell">
+  <section *ngIf="showInstructions" class="intro-card" aria-labelledby="intro-title">
+    <div class="intro-head">
+      <span class="intro-icon">📋</span>
+      <div>
+        <p class="intro-tag">Before you begin</p>
+        <h2 id="intro-title">{{ instructionTitle }}</h2>
+        <p *ngIf="instructionDuration" class="intro-meta">{{ instructionDuration }}</p>
+      </div>
+    </div>
+
+    <div class="intro-steps" aria-hidden="true">
+      <span [class.on]="instructionStep === 1">1 · Instructions</span>
+      <span [class.on]="instructionStep === 2">2 · Declaration</span>
+    </div>
+
+    <div *ngIf="instructionStep === 1" class="intro-grid">
+      <div class="intro-block">
+        <h3>⏱️ About the timer</h3>
+        <ul>
+          <li>The timer is in the top bar. It starts as soon as you tap <b>Start test</b>.</li>
+          <li>The clock runs on our server, so refreshing the page won't reset it.</li>
+          <li>When it reaches zero, your test is submitted automatically. You don't need to do anything.</li>
+          <li>You can leave with <b>Save &amp; exit</b> and come back to continue. The timer pauses while you're away.</li>
+        </ul>
+      </div>
+
+      <div class="intro-block">
+        <h3>✍️ Answering questions</h3>
+        <ul>
+          <li>Tap an option to choose your answer. It is saved right away.</li>
+          <li>To change it, tap a different option. To remove it, tap <b>Clear my answer</b>.</li>
+          <li>Use <b>Next</b> and <b>Previous</b> to move around, or tap any number in the side panel.</li>
+          <li>Use <b>Mark for review</b> on a question you want to look at again. It doesn't affect your marks.</li>
+        </ul>
+      </div>
+
+      <div class="intro-block">
+        <h3>🎨 Question colours</h3>
+        <ul class="intro-legend">
+          <li><span class="capsule unvisited">1</span> Not opened yet</li>
+          <li><span class="capsule skipped">2</span> Opened, but not answered</li>
+          <li><span class="capsule answered">3</span> Answered</li>
+          <li><span class="capsule review">4</span> Marked for review, not answered</li>
+          <li><span class="capsule answered-review">5</span> Answered and marked for review: your answer <b>is counted</b></li>
+        </ul>
+        <p class="intro-note">"Mark for review" only helps you find a question again. A marked question with no answer earns no marks.</p>
+      </div>
+
+      <div class="intro-block">
+        <h3>✅ Finishing</h3>
+        <ul>
+          <li>Tap <b>Finish test</b> on the last question to submit and see your result.</li>
+          <li>Unanswered questions are simply counted as not attempted.</li>
+          <li>English and Assamese are shown together wherever available.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div *ngIf="instructionStep === 2" class="declare">
+      <h3>Please read carefully</h3>
+      <ul class="declare-rules">
+        <li>Each question has several answer options. Choose the one you think is best.</li>
+        <li>All questions carry equal marks.</li>
+        <li>You may leave a question unanswered. Only answered questions are scored.</li>
+      </ul>
+      <label class="declare-box">
+        <input type="checkbox" [checked]="agreed" (change)="agreed = $any($event.target).checked" />
+        <span>
+          <b>{{ candidateName }}</b>, I have read and understood the instructions. I will take this test on my own
+          without help from other people, books, notes or any other source, and I agree to follow the instructions.
+        </span>
+      </label>
+    </div>
+
+    <div class="intro-actions">
+      <button *ngIf="instructionStep === 1" mat-stroked-button type="button" (click)="cancelStart()">← Back to dashboard</button>
+      <button *ngIf="instructionStep === 2" mat-stroked-button type="button" (click)="instructionStep = 1">← Previous</button>
+      <button *ngIf="instructionStep === 1" mat-flat-button color="primary" type="button" class="next-btn" (click)="instructionStep = 2">Next →</button>
+      <button *ngIf="instructionStep === 2" mat-flat-button color="primary" type="button" class="next-btn" [disabled]="!agreed" (click)="beginTest()">I am ready to begin →</button>
+    </div>
+  </section>
+
+  <ng-container *ngIf="!showInstructions">
+  <header class="test-bar">
+    <div class="test-title">
+      <span class="test-tag">{{ daily ? '🎁 Daily Free Test' : (packLabel || 'Practice') }}</span>
+      <h2>{{ categories.length ? categories.join(' · ') : (daily ? 'Today’s free test' : 'Practice Test') }}</h2>
+    </div>
+    <div class="test-actions">
+      <button *ngIf="hasAssamese" type="button" class="lang-switch" role="switch" [attr.aria-checked]="showAssamese" (click)="toggleAssamese()"
+        [title]="showAssamese ? 'Hide Assamese text' : 'Show Assamese text'">
+        <span class="lang-track"><span class="lang-knob"></span></span>
+        <span class="lang-label">অসমীয়া</span>
+      </button>
+      <div *ngIf="totalSeconds" class="timer-pill" [class.low]="timeLow" [class.frozen]="!connected" title="Total time: {{ totalLabel }}">
+        <span aria-hidden="true">⏱️</span> {{ timeLabel }}
+      </div>
+      <button mat-stroked-button type="button" class="exit-btn" (click)="exitTest()" [disabled]="!questions.length">Save &amp; exit</button>
+    </div>
+  </header>
+
+  <div *ngIf="!connected" class="conn-banner">Reconnecting… your answers are safe.</div>
+  <div *ngIf="questions.length === 0" class="section-loading page-loading" role="status"><mat-spinner diameter="40"></mat-spinner><span>Getting your questions ready…</span></div>
+
+  <div *ngIf="questions.length > 0" class="layout">
+    <main class="question-card">
+      <div class="q-head">
+        <span class="q-count">Question {{ currentIndex + 1 }} of {{ questions.length }}</span>
+        <span class="q-meta" *ngIf="currentQuestion.subject">{{ currentQuestion.subject }}<ng-container *ngIf="currentQuestion.topic"> · {{ currentQuestion.topic }}</ng-container></span>
+        <button type="button" class="report-btn" (click)="openFlag()" title="Report a problem with this question">🚩 Report</button>
+      </div>
+      <div class="progress-bar" role="progressbar" [attr.aria-valuenow]="currentIndex + 1" aria-valuemin="1" [attr.aria-valuemax]="questions.length">
+        <span [style.width.%]="((currentIndex + 1) / questions.length) * 100"></span>
+      </div>
+
+      <div *ngIf="passageText" class="passage">{{ passageText }}</div>
+      <h3 class="q-text" [appMath]="currentQuestion.questionText"></h3>
+      <p *ngIf="showAssamese && currentQuestion.translation?.questionText" class="translation" lang="as" [appMath]="currentQuestion.translation?.questionText"></p>
+
+      <div class="options-list" role="radiogroup">
+        <label class="option-item" *ngFor="let option of currentQuestion.options; let i = index" [class.selected]="currentAnswer === i">
+          <input type="radio" [name]="currentQuestion.id" [checked]="currentAnswer === i" (change)="selectAnswer(i)" />
+          <span class="option-letter">{{ 'ABCDEFGH'[i] }}</span>
+          <span class="option-text">
+            <span [appMath]="option"></span>
+            <span *ngIf="showAssamese && currentQuestion.translation?.options?.[i]" class="translation" lang="as" [appMath]="currentQuestion.translation?.options?.[i]"></span>
+          </span>
+        </label>
+      </div>
+
+      <div class="controls-row">
+        <button mat-stroked-button type="button" (click)="previousQuestion()" [disabled]="currentIndex === 0">← Previous</button>
+        <span class="controls-right">
+          <button mat-stroked-button type="button" class="bookmark-btn" [class.on]="markReviewStates[currentQuestion.id]" (click)="markForReview()">
+            {{ markReviewStates[currentQuestion.id] ? '🔖 Marked for review' : '🔖 Mark for review' }}
+          </button>
+          <button mat-stroked-button type="button" (click)="clearAnswer()" [disabled]="currentAnswer === undefined">✖ Clear</button>
+          <button mat-flat-button color="primary" type="button" class="next-btn" (click)="nextQuestion()" [disabled]="finishing">
+            {{ currentIndex === questions.length - 1 ? 'Finish test ✓' : 'Next →' }}
+          </button>
+        </span>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <h4>Jump to a question</h4>
+      <p class="side-sub">{{ count('answered') }} of {{ questions.length }} answered</p>
+      <div class="palette">
+        <button type="button" *ngFor="let q of questions; let i = index" class="capsule"
+          [ngClass]="status(i)" [class.current]="i === currentIndex" [attr.aria-label]="'Question ' + (i + 1)" (click)="goTo(i)">{{ i + 1 }}</button>
+      </div>
+      <ul class="legend">
+        <li><span class="capsule unvisited"></span>Not opened ({{ count('unvisited') }})</li>
+        <li><span class="capsule skipped"></span>Not answered ({{ count('skipped') }})</li>
+        <li><span class="capsule answered"></span>Answered ({{ count('answered') }})</li>
+        <li><span class="capsule review"></span>Marked for review, not answered ({{ count('review') }})</li>
+        <li><span class="capsule answered-review"></span>Answered &amp; marked for review ({{ count('answered-review') }})</li>
+      </ul>
+    </aside>
+  </div>
+
+  <div class="flag-overlay" *ngIf="flagOpen" (click)="closeFlag()">
+    <div class="flag-modal" role="dialog" aria-modal="true" aria-labelledby="flag-title" (click)="$event.stopPropagation()">
+      <h3 id="flag-title">Report a problem</h3>
+      <p class="flag-sub">What is wrong with this question? Your test keeps running.</p>
+      <label class="flag-opt" *ngFor="let r of flagReasons" [class.selected]="flagReason === r.value">
+        <input type="radio" name="flag-reason" [value]="r.value" [checked]="flagReason === r.value" (change)="flagReason = r.value" />
+        {{ r.label }}
+      </label>
+      <textarea rows="3" maxlength="500" placeholder="Add details (optional)" [value]="flagNote" (input)="onFlagNote($event)"></textarea>
+      <div class="flag-actions">
+        <button mat-stroked-button type="button" (click)="closeFlag()">Cancel</button>
+        <button mat-flat-button color="primary" type="button" (click)="sendFlag()" [disabled]="!flagReason || flagSending">Send report</button>
+      </div>
+    </div>
+  </div>
+  </ng-container>
+</div>

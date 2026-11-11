@@ -1,0 +1,65 @@
+<div class="page-shell" *ngIf="user">
+  <mat-card class="profile-card">
+    <div class="avatar-lg">{{ initials }}</div>
+    <div class="identity">
+      <h1>{{ user.name || user.email }}</h1>
+      <span class="role-badge" [class.admin]="user.role !== 'user'">{{ user.role === 'superadmin' ? 'Super Administrator' : user.role === 'admin' ? 'Administrator' : 'Learner' }}</span>
+    </div>
+    <div class="profile-actions">
+      <button mat-flat-button color="primary" routerLink="/dashboard">Go to Dashboard</button>
+      <button *ngIf="user.role !== 'user'" mat-stroked-button color="primary" routerLink="/admin">Admin Mode</button>
+      <button mat-stroked-button (click)="logout()">Logout</button>
+    </div>
+  </mat-card>
+
+  <section class="details-grid">
+    <mat-card>
+      <h3>Account</h3>
+      <dl>
+        <dt>Name</dt><dd>{{ user.name || '-' }}</dd>
+        <dt>Email</dt><dd>{{ user.email || '-' }}</dd>
+        <dt>Role</dt><dd>{{ user.role === 'superadmin' ? 'Super Admin' : user.role === 'admin' ? 'Admin' : 'User' }}</dd>
+        <dt>Member since</dt><dd>{{ user.createdAt ? (user.createdAt | date: 'mediumDate') : '-' }}</dd>
+        <dt>Last login</dt><dd>{{ user.lastLoginAt ? (user.lastLoginAt | date: 'medium') : '-' }}</dd>
+      </dl>
+    </mat-card>
+
+    <mat-card>
+      <h3>My progress</h3>
+      <div class="stat-row">
+        <div><div class="value">{{ stats.attemptedCount }}</div><div class="label">Questions answered</div></div>
+        <div><div class="value">{{ stats.testsCompleted }}</div><div class="label">Tests completed</div></div>
+        <div><div class="value">{{ stats.averageAccuracy }}%</div><div class="label">Avg. accuracy</div></div>
+      </div>
+    </mat-card>
+  </section>
+
+  <mat-card *ngIf="accuracyByCategory.length" class="strengths">
+    <h3>Strongest and weakest categories</h3>
+    <ul>
+      <li *ngFor="let item of accuracyByCategory">
+        <span>{{ item.category }}</span>
+        <span class="pct" [class.good]="item.accuracy >= 60" [class.low]="item.accuracy < 40">{{ item.accuracy }}%</span>
+      </li>
+    </ul>
+  </mat-card>
+
+  <mat-card class="account-settings">
+    <h3>Privacy and account</h3>
+    <p><a routerLink="/privacy-policy">Privacy Policy</a> · <a routerLink="/delete-account">Account deletion information</a></p>
+    <h4>Delete My Account</h4>
+    <p>This permanently deletes your account and its learning history, saved answers, scores, local payment records, reviews and question reports. The action cannot be undone. Confirm your password and check the box to continue.</p>
+    <form [formGroup]="deletionForm" (ngSubmit)="deleteAccount()" novalidate>
+      <label for="delete-account-password">Current password</label>
+      <input id="delete-account-password" type="password" formControlName="password" autocomplete="current-password" minlength="4" maxlength="72" required />
+      <span class="field-error" *ngIf="deletionForm.controls.password.touched && deletionForm.controls.password.invalid">Enter your current password.</span>
+      <label class="delete-confirmation" for="delete-account-confirmation">
+        <input id="delete-account-confirmation" type="checkbox" formControlName="confirmation" required />
+        <span>I understand that this deletion is permanent.</span>
+      </label>
+      <span class="field-error" *ngIf="deletionForm.controls.confirmation.touched && deletionForm.controls.confirmation.invalid">Confirm that you understand the consequences.</span>
+      <p *ngIf="deletionError" class="deletion-error" role="alert">{{ deletionError }}</p>
+      <button type="submit" [disabled]="isDeleting">{{ isDeleting ? 'Deleting account…' : 'Delete My Account' }}</button>
+    </form>
+  </mat-card>
+</div>

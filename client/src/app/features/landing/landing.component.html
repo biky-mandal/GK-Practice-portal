@@ -1,0 +1,212 @@
+<div class="landing">
+  <header id="top" class="hero">
+    <div class="hero-copy">
+      <span class="pill"><span class="status-dot" aria-hidden="true"></span> Made for Assam's next achievers</span>
+      <h1>A little practice.<br />A <span class="accent">bigger future.</span></h1>
+      <p>Your next chapter starts here. Prepare for ADRE and Assam Police &amp; Forest with focused Test Series, real exam papers and a clearer view of your progress.</p>
+      <div class="hero-cta">
+        <button mat-flat-button color="primary" class="big" [routerLink]="startLink">{{ startLabel }}</button>
+        <button mat-stroked-button class="big" (click)="scrollTo('exam-tracks')">Explore Test Series <span aria-hidden="true">↗</span></button>
+      </div>
+      <ul class="hero-stats">
+        <li><strong>2</strong> preparation tracks</li>
+        <li><strong>10</strong> ADRE PYQ papers</li>
+        <li><strong>One-time</strong> payment. No subscription.</li>
+      </ul>
+    </div>
+    <div class="hero-art">
+      <div class="art-caption"><span class="art-star" aria-hidden="true">✦</span> Small steps. Steady progress.</div>
+      <div class="practice-preview" aria-label="Illustrative practice question">
+        <div class="preview-top"><span class="preview-brand">YOUR DAILY DOSE OF PROGRESS</span><span class="preview-tag">Sample question</span></div>
+        <div class="preview-meta"><span>ASSAM KNOWLEDGE</span><span>01 / 10</span></div>
+        <h2>Which city is the capital of Assam?</h2>
+        <div class="preview-options">
+          <div><span>A</span> Guwahati</div>
+          <div class="answer"><span>B</span> Dispur <b aria-label="Correct answer">✓</b></div>
+          <div><span>C</span> Jorhat</div>
+          <div><span>D</span> Dibrugarh</div>
+        </div>
+        <p class="preview-note">Learn the why, not just the answer.<br /><strong>Explanations unlock after you submit.</strong></p>
+      </div>
+      <div class="art-footer"><span class="art-check" aria-hidden="true">✓</span><div><strong>Built around your pace</strong><span>Practise. Pause. Come back stronger.</span></div><span class="art-arrow" aria-hidden="true">↗</span></div>
+    </div>
+  </header>
+
+  <div class="benefit-strip" aria-label="Practice benefits">
+    <span><b aria-hidden="true">✓</b> English + অসমীয়া</span>
+    <span><b aria-hidden="true">✓</b> Pause &amp; resume</span>
+    <span><b aria-hidden="true">✓</b> Detailed answer review</span>
+    <span><b aria-hidden="true">✓</b> Lifetime access</span>
+  </div>
+
+  <section id="exam-tracks" class="section track-intro">
+    <span class="eyebrow">YOUR GOAL. YOUR PATH.</span>
+    <h2>Big ambitions deserve<br />a focused plan.</h2>
+    <p class="sub">Choose your exam. Find your rhythm. Make every session count.</p>
+  </section>
+
+  <section id="adre" class="adre-spotlight">
+    <div class="adre-copy">
+      <span class="adre-tag">01 / Assam Direct Recruitment</span>
+      <h2>ADRE 3.0 Practice Test Series</h2>
+      <p>From your first topic to your final revision. Build a solid foundation with subject-wise practice, previous year papers and 10 full-length mocks.</p>
+      <ul>
+        <li *ngFor="let h of adreHighlights">✓ {{ h }}</li>
+      </ul>
+      <div class="adre-cta">
+        <button mat-flat-button class="adre-btn" routerLink="/adre">Explore ADRE 3.0</button>
+        <button mat-stroked-button class="adre-ghost" [routerLink]="startLink">{{ auth.userSignal() ? 'Open dashboard' : 'Try free sample' }}</button>
+      </div>
+    </div>
+    <div class="adre-price">
+      <div class="adre-price-label">Choose your Test Series</div>
+      <div class="adre-price-row" *ngFor="let p of adrePlans" [ngClass]="'plan-' + p.id">
+        <div class="adre-plan-name">
+          <span>{{ p.name }}</span>
+          <span *ngIf="pricing.savingsFor(p.id) as save" class="adre-offer-badge">{{ save }}</span>
+        </div>
+        <div class="adre-plan-amount">
+          <span *ngIf="pricing.originalFor(p.id) as mrp" class="adre-mrp">{{ mrp }}</span>
+          <strong>{{ pricing.priceFor(p.id) }}</strong>
+        </div>
+      </div>
+      <div class="adre-price-note">One-time payment. No subscription.</div>
+    </div>
+  </section>
+
+  <section class="police-spotlight">
+    <div class="police-copy">
+      <span class="adre-tag">02 / Assam Police &amp; Forest</span>
+      <h2>Aim higher.<br />Prepare with purpose.</h2>
+      <p>Strengthen the basics with subject-wise practice, then bring it all together with 10 full-length Constable mocks.</p>
+      <a mat-flat-button class="police-btn" routerLink="/assam-police-forest">Explore Police &amp; Forest <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="police-pattern">
+      <span class="pattern-label">THE CONSTABLE MOCK EXPERIENCE</span>
+      <div class="pattern-stats"><div><strong>100</strong><span>MCQs per mock</span></div><div><strong>50</strong><span>Total marks</span></div><div><strong>0</strong><span>Negative marking</span></div></div>
+      <p>90-minute practice timer, not an official duration. Based on the documented Constable pattern; SI/Forest-specific patterns are not included yet.</p>
+      <span class="pattern-foot">Two separate Test Series. One focused goal.</span>
+    </div>
+  </section>
+
+  <section id="pyq" class="pyq-band">
+    <div class="pyq-inner">
+      <span class="pyq-tag">THE REAL EXAM. A FRESH PERSPECTIVE.</span>
+      <h2>Know the paper.<br />Build your confidence.</h2>
+      <p>{{ pyq.text }}</p>
+      <div class="pyq-years">
+        <div class="pyq-year" *ngFor="let y of pyqYears">
+          <strong>{{ y }}</strong>
+          <ul><li *ngFor="let p of pyqPapers">{{ p }}</li></ul>
+        </div>
+      </div>
+      <ul class="pyq-points"><li *ngFor="let x of pyq.points">✓ {{ x }}</li></ul>
+      <button mat-flat-button class="pyq-btn" (click)="scrollTo('pricing')">Unlock all 10 PYQ papers</button>
+    </div>
+  </section>
+
+  <section id="features" class="section">
+    <span class="eyebrow">LESS GUESSWORK. MORE GROWTH.</span>
+    <h2>Everything you need to prepare</h2>
+    <p class="sub">Simple tools that help you turn preparation into a habit.</p>
+    <div class="grid four">
+      <article class="card" *ngFor="let f of features">
+        <div class="icon">{{ f.icon }}</div>
+        <h3>{{ f.title }}</h3>
+        <p>{{ f.text }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="categories" class="section tint">
+    <span class="eyebrow">BUILD YOUR FOUNDATION</span>
+    <h2>Practise by category</h2>
+    <p class="sub">Mix and match. One question can belong to several categories.</p>
+    <div class="cat-grid">
+      <div class="cat" *ngFor="let c of categories" [style.--from]="c.from" [style.--to]="c.to">
+        <span class="cat-icon">{{ c.icon }}</span>
+        <span>{{ c.name }}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <span class="eyebrow">A SIMPLE WAY FORWARD</span>
+    <h2>How it works</h2>
+    <div class="grid three">
+      <article class="card step" *ngFor="let s of steps">
+        <div class="num">{{ s.n }}</div>
+        <h3>{{ s.title }}</h3>
+        <p>{{ s.text }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="pricing" class="section">
+    <span class="eyebrow">INVEST IN YOUR NEXT CHAPTER</span>
+    <h2>Pay once. Practise for good.</h2>
+    <p class="sub">{{ pricingNote }}<br />{{ languageNote }}</p>
+    <div *ngFor="let group of planGroups" class="pricing-group" [class.forest-pricing]="group.id === 'police-forest'">
+      <div class="pricing-heading"><div><span class="eyebrow">{{ group.label }}</span><h3>{{ group.name }}</h3></div><a [routerLink]="group.link">Explore exam <span aria-hidden="true">↗</span></a></div>
+      <div class="grid" [class.three]="group.plans.length >= 3" [class.two]="group.plans.length === 2">
+      <article class="card plan" *ngFor="let p of group.plans" [ngClass]="'plan-' + p.id">
+        <img *ngIf="packageImageFor(p.id) as image" class="package-image" [src]="image" alt="" aria-hidden="true" loading="lazy" decoding="async">
+        <span class="badge">English + অসমীয়া</span>
+        <h3>{{ p.name }}</h3>
+        <p *ngIf="p.description">{{ p.description }}</p>
+        <div class="price">
+          <span *ngIf="pricing.originalFor(p.id) as mrp" class="mrp">{{ mrp }}</span>
+          <span class="now">{{ pricing.priceFor(p.id) }}</span>
+          <span *ngIf="pricing.savingsFor(p.id) as off" class="off">{{ off }}</span>
+          <small>{{ pricing.originalFor(p.id) ? 'Limited-time offer · ' : '' }}{{ p.period }}</small>
+        </div>
+        <ul>
+          <li *ngFor="let perk of p.perks">✓ {{ perk }}</li>
+        </ul>
+        <ng-container *ngIf="pricing.isOwned(p.id); else buyBtn">
+          <button mat-flat-button class="full" type="button" disabled>Purchased</button>
+          <button mat-flat-button color="primary" class="full" type="button" routerLink="/dashboard">Go to dashboard</button>
+        </ng-container>
+        <ng-template #buyBtn>
+          <button mat-flat-button [color]="p.highlight ? 'primary' : undefined" class="full" [disabled]="!pricing.onSale(p)" [routerLink]="['/checkout', p.id]">{{ pricing.onSale(p) ? p.cta : 'Not on sale' }}</button>
+        </ng-template>
+      </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="section tint">
+    <span class="eyebrow">WE'RE HERE TO HELP</span>
+    <h2>Get in touch</h2>
+    <p class="sub">Questions about plans, content or partnerships? We would love to hear from you.</p>
+    <div class="contact-grid">
+      <div class="card info">
+        <p><span class="icon-sm">✉️</span> <a [href]="'mailto:' + contact.email">{{ contact.email }}</a></p>
+        <p><span class="icon-sm">📞</span> <a [href]="'tel:' + contact.phone.replace(' ', '')">{{ contact.phone }}</a></p>
+        <p><span class="icon-sm">📍</span> {{ contact.address }}</p>
+        <p><span class="icon-sm">🕘</span> {{ contact.hours }}</p>
+      </div>
+      <form #f class="card form" (submit)="sendMessage($event, f, n.value, e.value, m.value)">
+        <label>Name <input #n type="text" required minlength="2" maxlength="80" /></label>
+        <label>Email <input #e type="email" required maxlength="120" /></label>
+        <label>Message <textarea #m rows="4" required minlength="5" maxlength="1000"></textarea></label>
+        <button mat-flat-button color="primary" type="submit" [disabled]="contactStatus === 'sending'">{{ contactStatus === 'sending' ? 'Sending...' : 'Send message' }}</button>
+        <p *ngIf="contactStatus === 'sent'" class="contact-success" role="status">Thanks! Your message has been sent. We will get back to you soon.</p>
+        <p *ngIf="contactStatus === 'error'" class="contact-error" role="alert">{{ contactError }}</p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="foot-brand"><span class="foot-logo"><img src="logo.png" alt="Let's Crack ADRE" width="500" height="243" /></span></div>
+    <div class="foot-links">
+      <button type="button" (click)="scrollTo('features')">Features</button>
+      <button type="button" (click)="scrollTo('pricing')">Pricing</button>
+      <button type="button" (click)="scrollTo('contact')">Contact</button>
+      <a [routerLink]="startLink">{{ auth.userSignal() ? 'Dashboard' : 'Log in' }}</a>
+      <a routerLink="/privacy-policy">Privacy Policy</a>
+      <a routerLink="/delete-account">Delete Account</a>
+    </div>
+    <small>© {{ year }} Let's Crack ADRE. All rights reserved.</small>
+  </footer>
+</div>

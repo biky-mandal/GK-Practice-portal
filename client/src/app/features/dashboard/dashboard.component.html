@@ -1,0 +1,399 @@
+<div class="dash-layout">
+<aside class="dash-sidebar">
+  <div class="eyebrow">Welcome</div>
+  <h1 class="side-title">Dashboard</h1>
+  <nav class="dash-menu" aria-label="Dashboard sections">
+    <button *ngIf="isLoggedIn()" type="button" [class.active]="activeTab === 'progress'" (click)="setView('progress')"><span class="ico">📊</span>Progress</button>
+    <button type="button" [class.active]="activeTab === 'practice'" (click)="setView('practice')"><span class="ico">📖</span>Practice<span class="count" *ngIf="visiblePackCount">{{ visiblePackCount }}</span></button>
+    <button *ngIf="isLoggedIn()" type="button" [class.active]="activeTab === 'results'" (click)="setView('results')"><span class="ico">📋</span>Recent Tests</button>
+  </nav>
+</aside>
+<div class="page-shell">
+  <p *ngIf="!isLoggedIn()" class="hint">Browse all packages without an account. Log in to attempt the free content in each section.</p>
+
+  <div *ngIf="!tier" class="section-loading page-loading" role="status"><mat-spinner diameter="40"></mat-spinner><span>Loading your dashboard…</span></div>
+
+  <div *ngIf="selectedPack" class="detail-bar">
+    <button type="button" class="back-link" (click)="backToList()">← Back to Practice</button>
+  </div>
+
+  <div *ngIf="detailMissing" class="empty-state">
+    This Test Series is not available. <button type="button" class="back-link" (click)="backToList()">See all items</button>
+  </div>
+
+  <div *ngIf="activeAttempt && activeTab === 'practice'" class="resume-banner" role="status">
+    <div class="resume-text">
+      <span class="resume-label">⏳ Unfinished session</span>
+      <strong>{{ activeAttempt.answeredCount }}/{{ activeAttempt.totalQuestions }} answered · {{ activeAttempt.remainingSeconds / 60 | number: '1.0-0' }} min left</strong>
+    </div>
+    <button mat-flat-button class="resume-cta" [routerLink]="['/practice', 'gk']">Resume Practice →</button>
+  </div>
+
+  <div *ngIf="showDaily && view === 'practice' && !selectedPack" id="daily" class="daily-strip" [class.is-done]="daily?.status === 'completed'">
+    <span class="daily-icon">{{ daily?.status === 'completed' ? '✅' : '🎁' }}</span>
+    <div class="daily-body">
+      <strong>Daily Free Test</strong>
+      <span class="daily-sub">
+        {{ daily?.status === 'completed' ? 'Done for today — come back tomorrow!' : (daily?.questionCount ?? 10) + ' questions · one free test every day' }}
+      </span>
+    </div>
+    <button mat-flat-button color="primary" type="button" [disabled]="!daily || daily.status === 'completed'" (click)="startDaily()">
+      {{ daily?.status === 'in_progress' ? 'Resume' : daily?.status === 'completed' ? 'Completed' : 'Start free test' }}
+    </button>
+  </div>
+
+  <section class="stats-grid" *ngIf="showProgress">
+    <mat-card class="stat-card blue">
+      <span class="stat-icon">📝</span>
+      <div><div class="label">Questions attempted</div><div class="value">{{ stats.attemptedCount }}</div></div>
+    </mat-card>
+    <mat-card class="stat-card teal">
+      <span class="stat-icon">✅</span>
+      <div><div class="label">Tests completed</div><div class="value">{{ stats.testsCompleted }}</div></div>
+    </mat-card>
+    <mat-card class="stat-card amber">
+      <span class="stat-icon">🎯</span>
+      <div><div class="label">Average accuracy</div><div class="value">{{ stats.averageAccuracy }}%</div></div>
+    </mat-card>
+  </section>
+
+  <section *ngIf="tier && listedPacks.length" class="item-grid" aria-label="Practice">
+    <a *ngFor="let pack of listedPacks" class="item-card" [ngClass]="'theme-' + brief(pack).theme"
+      [routerLink]="['/dashboard', 'item', pack]" data-testid="item-card">
+      <img class="item-image" [src]="brief(pack).image" alt="" aria-hidden="true">
+      <div class="item-card-content">
+        <div class="item-top">
+          <span class="item-icon" aria-hidden="true">{{ brief(pack).icon }}</span>
+          <span *ngIf="ownsPack(pack)" class="item-chip owned">✓ Unlocked</span>
+          <span *ngIf="!ownsPack(pack)" class="item-chip price">
+            <s *ngIf="pricing.originalFor(pack) as original">{{ original }}</s>
+            {{ prices[pack] !== undefined ? '₹' + prices[pack] : pricing.priceFor(pack) }}
+          </span>
+        </div>
+        <h2 class="item-name">{{ packName(pack) }}</h2>
+        <p class="item-tagline">{{ brief(pack).tagline }}</p>
+        <div class="item-foot">
+          <span class="item-rating" *ngIf="reviews[pack] as r">★ {{ r.count ? r.average + ' (' + r.count + ')' : 'New' }}</span>
+          <span class="item-go">{{ ownsPack(pack) ? 'Open' : 'View details' }} ›</span>
+        </div>
+      </div>
+    </a>
+  </section>
+
+  <mat-card *ngFor="let p of customPackages" class="panel">
+    <h2>{{ p.name }}</h2>
+    <p *ngIf="p.description">{{ p.description }}</p>
+    <ul><li *ngFor="let perk of p.perks">{{ perk }}</li></ul>
+    <ng-container *ngIf="ownsPack(p.pack); else buyPackage">
+      <p>Purchased. Open the unlocked practice sections below:</p>
+      <a mat-button *ngFor="let content of p.access" [routerLink]="['/dashboard', 'item', content]">{{ packName(content) }}</a>
+    </ng-container>
+    <ng-template #buyPackage><button mat-flat-button color="primary" [disabled]="!p.enabled" [routerLink]="['/checkout', p.pack]">{{ p.enabled ? 'Buy for ' + (p.price | currency:'INR') : 'Not on sale' }}</button></ng-template>
+    <ng-container *ngTemplateOutlet="reviewStrip; context: { pack: p.pack }"></ng-container>
+  </mat-card>
+
+  <mat-card *ngIf="tier && showPack('pyq')" id="pyq" class="panel pyq-section">
+    <div class="pyq-hero">
+      <span class="pyq-hero-icon">📚</span>
+      <div class="pyq-hero-text">
+        <h2>{{ packName('pyq') }}</h2>
+        <p class="pyq-hero-sub">ADRE 1.0 (2022) &amp; ADRE 2.0 (2024) papers</p>
+      </div>
+      <button *ngIf="!pyqOwned" mat-flat-button class="buy-btn on-dark" type="button" [disabled]="!canBuy('pyq')" [routerLink]="['/checkout', 'pyq']">🛒 Buy PYQ Practice<span class="buy-price" *ngIf="prices['pyq'] !== undefined">₹{{ prices['pyq'] }}</span></button>
+      <span *ngIf="pyqOwned" class="pyq-unlocked">✓ Unlocked</span>
+    </div>
+    <ng-container *ngTemplateOutlet="reviewStrip; context: { pack: 'pyq' }"></ng-container>
+    <ng-container *ngTemplateOutlet="packageDetails; context: { pack: 'pyq' }"></ng-container>
+    <div class="lang-toggle" role="group" aria-label="Exam year">
+      <button type="button" *ngFor="let y of pyqYears" [class.active]="pyqYear === y.year" (click)="pyqYear = y.year">{{ yearLabel(y.year) }}</button>
+    </div>
+    <div *ngIf="pyqLoading" class="section-loading" role="status"><mat-spinner diameter="28"></mat-spinner><span>Loading papers…</span></div>
+    <div *ngIf="!pyqLoading && !pyqPapers.length" class="empty-state">Papers will appear here soon.</div>
+    <div class="mock-grid pyq-papers">
+      <article *ngFor="let p of pyqPapers" class="mock-card pyq-paper" [class.soon]="p.count === 0" [class.locked]="!pyqOwned && !isFreePyq(p)" [class.clickable]="(pyqOwned || isFreePyq(p)) && p.count > 0"
+        [attr.role]="(pyqOwned || isFreePyq(p)) && p.count > 0 ? 'button' : null" [attr.tabindex]="(pyqOwned || isFreePyq(p)) && p.count > 0 ? 0 : null"
+        (click)="askPyq(p)" (keydown.enter)="askPyq(p)" data-testid="pyq-paper">
+        <span class="mock-num">{{ paperNumber(p.paper) }}</span><span class="mock-art" aria-hidden="true">{{ paperNumber(p.paper) }}</span>
+        <div class="mock-info">
+          <h3>Paper {{ paperNumber(p.paper) }}</h3>
+          <span *ngIf="isFreePyq(p)" class="item-chip owned">Free{{ !isLoggedIn() ? ' - login to start' : '' }}</span>
+          <span class="pyq-meta">
+            {{ p.grade }} · {{ p.level }} · {{ p.count === 0 ? 'Coming soon' : p.count + ' question' + (p.count === 1 ? '' : 's') }}
+          </span>
+        </div>
+        <span *ngIf="(pyqOwned || isFreePyq(p)) && p.count > 0" class="mock-go" aria-hidden="true">›</span>
+        <span *ngIf="(pyqOwned || isFreePyq(p)) && p.count === 0" class="mock-soon">Soon</span>
+        <span *ngIf="!pyqOwned && !isFreePyq(p)" class="mock-lock" title="Locked" aria-label="Locked">🔒</span>
+      </article>
+    </div>
+  </mat-card>
+
+  <mat-card *ngIf="tier && showPack('mock')" id="mock" class="panel mock-section">
+    <div class="pyq-hero mock-hero">
+      <span class="pyq-hero-icon">🏆</span>
+      <div class="pyq-hero-text">
+        <h2>{{ packName('mock') }}</h2>
+        <p class="pyq-hero-sub">10 exam-style tests with a real timer</p>
+      </div>
+      <button *ngIf="!mockOwned" mat-flat-button class="buy-btn on-dark" type="button" [disabled]="!canBuy('mock')" [routerLink]="['/checkout', 'mock']">🛒 Buy all 10 Mocks<span class="buy-price" *ngIf="prices['mock'] !== undefined">₹{{ prices['mock'] }}</span></button>
+      <span *ngIf="mockOwned" class="pyq-unlocked">✓ Unlocked</span>
+    </div>
+    <ng-container *ngTemplateOutlet="reviewStrip; context: { pack: 'mock' }"></ng-container>
+    <ng-container *ngTemplateOutlet="packageDetails; context: { pack: 'mock' }"></ng-container>
+    <div *ngIf="mocksLoading" class="section-loading" role="status"><mat-spinner diameter="28"></mat-spinner><span>Loading mocks…</span></div>
+    <div class="mock-grid">
+      <article *ngFor="let m of mocks" class="mock-card" [class.soon]="m.count === 0" [class.locked]="!mockOwned && m.number !== 1" [class.clickable]="(mockOwned || m.number === 1) && m.count > 0"
+        [attr.role]="(mockOwned || m.number === 1) && m.count > 0 ? 'button' : null" [attr.tabindex]="(mockOwned || m.number === 1) && m.count > 0 ? 0 : null"
+        (click)="askMock(m)" (keydown.enter)="askMock(m)" data-testid="mock-test">
+        <span class="mock-num">{{ m.number }}</span><span class="mock-art" aria-hidden="true">{{ m.number }}</span>
+        <div class="mock-info">
+          <h3>{{ m.title }}</h3>
+          <span *ngIf="m.number === 1" class="item-chip owned">Free{{ !isLoggedIn() ? ' - login to start' : '' }}</span>
+          <span class="mock-count">{{ m.count === 0 ? 'Coming soon' : m.count + ' question' + (m.count === 1 ? '' : 's') }}</span>
+        </div>
+        <span *ngIf="(mockOwned || m.number === 1) && m.count > 0" class="mock-go" aria-hidden="true">›</span>
+        <span *ngIf="(mockOwned || m.number === 1) && m.count === 0" class="mock-soon">Soon</span>
+        <span *ngIf="!mockOwned && m.number !== 1" class="mock-lock" title="Locked" aria-label="Locked">🔒</span>
+      </article>
+    </div>
+  </mat-card>
+
+<ng-template #packageDetails let-pack="pack">
+  <ng-container *ngIf="packDetails(pack) as details">
+    <p *ngIf="details.description">{{ details.description }}</p>
+    <ul class="pyq-perks"><li *ngFor="let perk of details.perks">{{ perk }}</li></ul>
+  </ng-container>
+</ng-template>
+
+<ng-template #reviewStrip let-pack="pack">
+  <div class="review-strip" *ngIf="reviews[pack] as r">
+    <div class="rs-score">
+      <span class="rs-star">★</span>
+      <strong>{{ r.count ? r.average : '–' }}</strong>
+      <span class="rs-count">{{ r.count ? r.count + ' review' + (r.count === 1 ? '' : 's') : 'No reviews yet' }}</span>
+    </div>
+    <div class="rs-quotes" *ngIf="r.recent.length">
+      <blockquote *ngFor="let x of r.recent.slice(0, 2)">
+        <span class="rv-stars">{{ '★'.repeat(x.rating) }}</span>
+        “{{ x.comment }}” <cite>— {{ x.name }}</cite>
+      </blockquote>
+    </div>
+    <button type="button" class="rs-btn" (click)="openReviews(pack)">{{ ownsPack(pack) ? (r.mine ? 'Edit your review' : '✍️ Write a review') : 'See all reviews' }}</button>
+  </div>
+</ng-template>
+
+<div *ngIf="reviewPack" class="confirm-backdrop" (click)="closeReviews()">
+    <div class="review-dialog" role="dialog" aria-modal="true" aria-labelledby="review-title" (click)="$event.stopPropagation()">
+      <h3 id="review-title">{{ packName(reviewPack) }}</h3>
+      <div class="review-summary" *ngIf="reviews[reviewPack] as r">
+        <span class="stars-big">★</span>
+        <strong>{{ r.count ? r.average : '–' }}</strong>
+        <span class="muted">{{ r.count }} review{{ r.count === 1 ? '' : 's' }}</span>
+      </div>
+
+      <div class="review-form" *ngIf="ownsPack(reviewPack)">
+        <h4>{{ reviews[reviewPack]?.mine ? 'Your review' : 'Rate this Test Series' }}</h4>
+        <div class="star-pick" role="radiogroup" aria-label="Your rating">
+          <button type="button" *ngFor="let n of [1,2,3,4,5]" [class.on]="n <= draftRating" [attr.aria-label]="n + ' star' + (n === 1 ? '' : 's')" (click)="draftRating = n">★</button>
+        </div>
+        <textarea rows="3" maxlength="500" placeholder="Tell others what you think (optional)" [value]="draftComment" (input)="onDraftComment($event)"></textarea>
+        <button mat-flat-button color="primary" type="button" [disabled]="!draftRating || reviewSending" (click)="submitReview()">{{ reviews[reviewPack]?.mine ? 'Update review' : 'Submit review' }}</button>
+      </div>
+      <p class="review-hint" *ngIf="!ownsPack(reviewPack)">Learners who buy this Test Series can leave a review.</p>
+
+      <ul class="review-list" *ngIf="reviews[reviewPack]?.recent?.length">
+        <li *ngFor="let x of reviews[reviewPack]?.recent">
+          <div class="rv-top"><strong>{{ x.name }}</strong><span class="rv-stars">{{ '★'.repeat(x.rating) }}<span class="off">{{ '★'.repeat(5 - x.rating) }}</span></span><time>{{ x.createdAt | date: 'd MMM y' }}</time></div>
+          <p>{{ x.comment }}</p>
+        </li>
+      </ul>
+      <div class="confirm-actions"><button mat-stroked-button type="button" (click)="closeReviews()">Close</button></div>
+    </div>
+  </div>
+
+  <div *ngIf="pending" class="confirm-backdrop" (click)="cancelPending()">
+    <div class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title" (click)="$event.stopPropagation()" (keydown.escape)="cancelPending()">
+      <span class="confirm-icon">🚀</span>
+      <h3 id="confirm-title">Start {{ pending.title }}?</h3>
+      <p>{{ pending.detail }}</p>
+      <p *ngIf="activeAttempt" class="confirm-warn">⚠️ This will replace your unfinished session.</p>
+      <div class="confirm-actions">
+        <button mat-stroked-button type="button" (click)="cancelPending()">Cancel</button>
+        <button mat-flat-button color="primary" type="button" cdkFocusInitial (click)="confirmPending()">Start test</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="tier && !selectedPack && view === 'practice' && !visiblePackCount" class="empty-state">No Test Series available yet.</div>
+
+  <mat-card *ngIf="tier && showPack('subject')" id="practice" class="panel subject-section">
+    <div class="pyq-hero subject-hero">
+      <span class="pyq-hero-icon">📖</span>
+      <div class="pyq-hero-text">
+        <h2>{{ packName('subject') }}</h2>
+        <p class="pyq-hero-sub">Practise topic by topic at your own pace</p>
+      </div>
+      <button *ngIf="!subjectOwned" mat-flat-button class="buy-btn on-dark" type="button" [disabled]="!canBuy('subject')" [routerLink]="['/checkout', 'subject']">🛒 Buy Subject Wise Practice<span class="buy-price" *ngIf="prices['subject'] !== undefined">₹{{ prices['subject'] }}</span></button>
+      <span *ngIf="subjectOwned" class="pyq-unlocked">✓ Unlocked</span>
+    </div>
+    <ng-container *ngTemplateOutlet="reviewStrip; context: { pack: 'subject' }"></ng-container>
+    <ng-container *ngTemplateOutlet="packageDetails; context: { pack: 'subject' }"></ng-container>
+    <p class="hint" *ngIf="!subjectOwned && freeCategory">🎁 <strong>{{ freeCategory }}</strong> is free to practise{{ isLoggedIn() ? '' : ' after you log in' }}. Buy this package to unlock every subject.</p>
+
+    <p class="hint" *ngIf="subjectOwned">Pick one or more categories — or leave all unselected to practise everything. A question can belong to several.
+      <strong *ngIf="selected.size">{{ selected.size }} selected</strong></p>
+    <div *ngIf="categoriesLoading" class="section-loading" role="status"><mat-spinner diameter="28"></mat-spinner><span>Loading subjects…</span></div>
+    <div class="cat-grid">
+      <button type="button" *ngFor="let c of categories" class="cat-card"
+        [class.selected]="selected.has(c.name) || (!subjectOwned && c.free)" [class.locked]="!subjectOwned && !c.free"
+        [disabled]="c.count === 0 || (!subjectOwned && !c.free)" [attr.aria-pressed]="selected.has(c.name) || (!subjectOwned && !!c.free)"
+        [ngStyle]="theme(c.name).vars" (click)="toggle(c.name)">
+        <span class="cat-icon">{{ theme(c.name).icon }}</span>
+        <span class="cat-art" aria-hidden="true">{{ theme(c.name).icon }}</span>
+        <span *ngIf="selected.has(c.name)" class="cat-check">✓</span>
+        <span *ngIf="!subjectOwned && !c.free" class="cat-check" title="Locked" aria-label="Locked">🔒</span>
+        <span class="cat-name">{{ c.name }}</span>
+        <span class="cat-stats"><span class="cat-pill"><b>{{ c.count }}</b> question{{ c.count === 1 ? '' : 's' }}</span>
+          <span *ngIf="c.free && !subjectOwned" class="item-chip owned">Free</span></span>
+      </button>
+    </div>
+
+    <div class="start-row" *ngIf="subjectOwned || freeCategory">
+      <label class="select-field">
+        <span class="select-label">Number of questions</span>
+        <span class="select-wrap">
+          <select (change)="questionCount = +$any($event.target).value">
+            <option *ngFor="let n of [10, 20, 50]" [value]="n" [selected]="n === questionCount">{{ n }} questions · {{ n }} min</option>
+          </select>
+        </span>
+      </label>
+      <button *ngIf="subjectOwned" mat-stroked-button type="button" (click)="selected.clear()" [disabled]="!selected.size">Clear selection</button>
+      <button mat-flat-button color="primary" type="button" (click)="startPractice()">
+        {{ subjectOwned ? (activeAttempt ? 'Start New Practice' : 'Start Practice') : (isLoggedIn() ? 'Start free ' + freeCategory : 'Log in to practise ' + freeCategory) }}
+      </button>
+    </div>
+  </mat-card>
+
+  <mat-card *ngIf="tier && showPack('police-subject')" id="police-subject" class="panel subject-section">
+    <div class="pyq-hero subject-hero">
+      <div class="pyq-hero-text"><h2>{{ packName('police-subject') }}</h2><p class="pyq-hero-sub">Constable written-test subjects. SI/Forest-specific patterns not included yet.</p></div>
+      <button *ngIf="!policeSubjectOwned" mat-flat-button class="buy-btn on-dark" type="button" [disabled]="!canBuy('police-subject')" [routerLink]="['/checkout', 'police-subject']">🛒 Buy Subject Wise Practice<span class="buy-price" *ngIf="prices['police-subject'] !== undefined">₹{{ prices['police-subject'] }}</span></button>
+      <span *ngIf="policeSubjectOwned" class="pyq-unlocked">Unlocked</span>
+    </div>
+    <ng-container *ngTemplateOutlet="reviewStrip; context: { pack: 'police-subject' }"></ng-container>
+    <ng-container *ngTemplateOutlet="packageDetails; context: { pack: 'police-subject' }"></ng-container>
+    <p class="hint" *ngIf="!policeSubjectOwned && policeFreeCategory">🎁 <strong>{{ policeFreeCategory }}</strong> is free to practise{{ isLoggedIn() ? '' : ' after you log in' }}. Buy this package to unlock every subject.</p>
+    <p class="hint" *ngIf="policeSubjectOwned">Choose categories, or leave all unselected to practise all published questions for this exam.</p>
+    <div *ngIf="policeLoading" class="section-loading" role="status"><mat-spinner diameter="28"></mat-spinner><span>Loading subjects…</span></div>
+    <p *ngIf="policeLoadError" role="alert">{{ policeLoadError }} <button mat-button (click)="loadPoliceContent()">Retry</button></p>
+    <p *ngIf="!policeLoading && !policeLoadError && !policeCategories.length" class="hint">Questions will appear here as they are published.</p>
+    <div class="cat-grid">
+      <button type="button" *ngFor="let c of policeCategories" class="cat-card"
+        [class.selected]="policeSelected.has(c.name) || (!policeSubjectOwned && c.free)" [class.locked]="!policeSubjectOwned && !c.free"
+        [disabled]="!c.count || (!policeSubjectOwned && !c.free)" [attr.aria-pressed]="policeSelected.has(c.name) || (!policeSubjectOwned && !!c.free)"
+        [ngStyle]="theme(c.name).vars" (click)="togglePolice(c.name)">
+        <span class="cat-icon">{{ theme(c.name).icon }}</span><span class="cat-name">{{ c.name }}</span><span class="cat-stats">{{ c.count }} questions</span>
+        <span *ngIf="c.free && !policeSubjectOwned" class="item-chip owned">Free</span>
+        <span *ngIf="!policeSubjectOwned && !c.free" class="cat-check" title="Locked" aria-label="Locked">🔒</span>
+      </button>
+    </div>
+    <div class="start-row" *ngIf="policeSubjectOwned || policeFreeCategory">
+      <label class="select-field">Number of questions <select (change)="policeQuestionCount = +$any($event.target).value"><option *ngFor="let n of [10, 20, 50]" [value]="n">{{ n }} questions</option></select></label>
+      <button *ngIf="policeSubjectOwned" mat-stroked-button (click)="policeSelected.clear()" [disabled]="!policeSelected.size">Clear selection</button>
+      <button mat-flat-button color="primary" [disabled]="!!policeLoadError || !policeHasQuestions" (click)="startPolicePractice()">
+        {{ policeSubjectOwned ? 'Start practice' : (isLoggedIn() ? 'Start free ' + policeFreeCategory : 'Log in to practise ' + policeFreeCategory) }}
+      </button>
+    </div>
+  </mat-card>
+
+  <mat-card *ngIf="tier && showPack('police-mock')" id="police-mock" class="panel mock-section">
+    <div class="pyq-hero mock-hero">
+      <div class="pyq-hero-text"><h2>{{ packName('police-mock') }}</h2><p class="pyq-hero-sub">Constable pattern: 100 MCQs / 50 marks / no negative marking</p></div>
+      <button *ngIf="!policeMockOwned" mat-flat-button class="buy-btn on-dark" type="button" [disabled]="!canBuy('police-mock')" [routerLink]="['/checkout', 'police-mock']">🛒 Buy all 10 Mocks<span class="buy-price" *ngIf="prices['police-mock'] !== undefined">₹{{ prices['police-mock'] }}</span></button>
+      <span *ngIf="policeMockOwned" class="pyq-unlocked">Unlocked</span>
+    </div>
+    <ng-container *ngTemplateOutlet="reviewStrip; context: { pack: 'police-mock' }"></ng-container>
+    <ng-container *ngTemplateOutlet="packageDetails; context: { pack: 'police-mock' }"></ng-container>
+    <p class="hint">90-minute practice timer, not an official duration. SI/Forest-specific patterns are not included yet. A mock unlocks for practice when exactly 100 active questions are published.</p>
+    <p *ngIf="policeLoadError" role="alert">{{ policeLoadError }} <button mat-button (click)="loadPoliceContent()">Retry</button></p>
+    <div class="mock-grid">
+      <article *ngFor="let m of policeMocks" class="mock-card" [class.soon]="m.count !== 100">
+        <span class="mock-num">{{ m.number }}</span><div class="mock-info"><h3>{{ m.title }}</h3><span class="mock-count">{{ m.count }}/100 questions</span>
+          <span *ngIf="m.number === 1" class="item-chip owned">Free</span>
+          <button mat-button [disabled]="(!policeMockOwned && m.number !== 1) || m.count !== 100" (click)="askPoliceMock(m)">{{ !policeMockOwned && m.number !== 1 ? 'Locked' : m.count !== 100 ? 'Not ready' : !isLoggedIn() ? 'Log in to start' : 'Start mock' }}</button>
+        </div>
+      </article>
+    </div>
+    <a mat-button routerLink="/assam-police-forest">View exam and Test Series details</a>
+  </mat-card>
+
+  <section class="stats-grid charts" *ngIf="showProgress">
+    <mat-card class="chart-card">
+      <h3>Overall answers</h3>
+      <p class="chart-sub">Correct vs incorrect vs skipped</p>
+      <app-pie-chart [slices]="outcomeSlices" title="Overall answer outcomes"></app-pie-chart>
+    </mat-card>
+    <mat-card class="chart-card">
+      <h3>Recent test accuracy</h3>
+      <p class="chart-sub">Your last tests, oldest to newest</p>
+      <app-line-chart [bars]="recentBars" [max]="100" unit="%" title="Recent test accuracy"></app-line-chart>
+    </mat-card>
+    <mat-card class="chart-card wide">
+      <h3>Accuracy by category</h3>
+      <p class="chart-sub">Your accuracy in each subject, strongest first</p>
+
+      <div *ngIf="!subjectBars.length" class="cat-empty">
+        <span>📊</span>
+        <p>Complete a practice test and your subject-wise accuracy will appear here.</p>
+      </div>
+
+      <div *ngIf="subjectBars.length" class="cat-insights">
+        <span class="insight good">🏆 Strongest: <b>{{ subjectBars[0].label }}</b> ({{ subjectBars[0].value }}%)</span>
+        <span *ngIf="subjectBars.length > 1" class="insight focus">🎯 Focus on: <b>{{ subjectBars[subjectBars.length - 1].label }}</b> ({{ subjectBars[subjectBars.length - 1].value }}%)</span>
+      </div>
+
+      <ul *ngIf="subjectBars.length" class="acc-list">
+        <li *ngFor="let b of subjectBars" class="acc-row" [style.--from]="meta(b.label).from" [style.--to]="meta(b.label).to">
+          <span class="acc-icon">{{ meta(b.label).icon }}</span>
+          <div class="acc-main">
+            <div class="acc-top">
+              <span class="acc-name">{{ b.label }}</span>
+              <span class="acc-tag" [class.strong]="b.value >= 60" [class.mid]="b.value >= 40 && b.value < 60" [class.weak]="b.value < 40">
+                {{ b.value >= 60 ? 'Strong' : b.value >= 40 ? 'Improving' : 'Needs practice' }}
+              </span>
+              <span class="acc-pct">{{ b.value }}%</span>
+            </div>
+            <div class="acc-track" role="progressbar" [attr.aria-valuenow]="b.value" aria-valuemin="0" aria-valuemax="100" [attr.aria-label]="b.label + ' accuracy'">
+              <div class="acc-fill" [style.width.%]="b.value"></div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </mat-card>
+  </section>
+
+  <mat-card class="panel" *ngIf="isLoggedIn() && !selectedPack && view === 'results'">
+    <div class="panel-header">
+      <h2>Recent test results</h2>
+    </div>
+    <p class="hint">Review your last 10 completed tests, including your answers and explanations.</p>
+    <div *ngIf="resultsLoading" class="section-loading" role="status"><mat-spinner diameter="28"></mat-spinner><span>Loading recent tests…</span></div>
+    <div *ngIf="resultsError" class="empty-state" role="alert">
+      Could not load recent tests. <button mat-button type="button" (click)="loadRecentAttempts()">Retry</button>
+    </div>
+    <div *ngIf="resultsLoaded && !resultsLoading && !recentAttempts.length" class="empty-state">
+      No completed tests yet. Complete a practice test to review it here.
+    </div>
+    <div *ngIf="resultsLoaded && !resultsLoading" class="result-list">
+      <article *ngFor="let item of recentAttempts" class="result-entry">
+        <div>
+          <h3>{{ attemptLabel(item) }}</h3>
+          <p>{{ item.submittedAt | date:'medium' }} · {{ item.totalQuestions }} questions</p>
+          <p>Score: {{ item.score }} · Accuracy: {{ item.percentage }}%</p>
+        </div>
+        <a mat-stroked-button color="primary" [routerLink]="['/result', item.id]" [queryParams]="{ from: 'recent-tests' }">View result</a>
+      </article>
+    </div>
+  </mat-card>
+</div>
+</div>

@@ -1,0 +1,85 @@
+<div class="global-loading" *ngIf="showLoading()" role="progressbar" aria-label="Loading">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  <span class="loading-chip"><span class="loading-dot" aria-hidden="true"></span>Loading…</span>
+</div>
+<header class="app-header" [class.transparent]="onLoginPage()">
+  <a class="brand" [routerLink]="auth.isAdmin() ? '/admin' : '/'">
+    <span class="brand-mark">
+        <img src="logo.png" alt="Logo" width="500" height="243" />
+    </span>
+  </a>
+
+  <button *ngIf="!auth.isAdmin()" type="button" class="burger" (click)="menuOpen = !menuOpen" aria-label="Toggle menu">☰</button>
+
+  <nav *ngIf="!auth.isAdmin()" class="nav-links" [class.open]="menuOpen" (click)="menuOpen = false">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+    <a routerLink="/adre" routerLinkActive="active" class="nav-featured">ADRE 3.0</a>
+    <a routerLink="/assam-police-forest" routerLinkActive="active">Assam Police and Forest</a>
+    <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+    <a routerLink="/" fragment="pricing">Pricing</a>
+    <a routerLink="/" fragment="contact">Contact</a>
+  </nav>
+
+  <div class="header-actions">
+    <ng-container *ngIf="auth.isAdmin() && presence.admins().length">
+      <button type="button" class="online-admins" [matMenuTriggerFor]="onlineMenu" aria-label="Admins online">
+        <span class="presence-avatar" *ngFor="let a of presence.admins() | slice: 0 : 4" [title]="a.name">{{ initialOf(a.name) }}</span>
+        <span class="presence-more" *ngIf="presence.admins().length > 4">+{{ presence.admins().length - 4 }}</span>
+        <span class="presence-dot"></span>
+      </button>
+      <mat-menu #onlineMenu="matMenu" xPosition="before">
+        <div class="menu-user"><strong>Admins online ({{ presence.admins().length }})</strong></div>
+        <div class="presence-row" *ngFor="let a of presence.admins()">
+          <span class="presence-avatar">{{ initialOf(a.name) }}</span>
+          <span>{{ a.name }}<em *ngIf="a.userId === auth.userSignal()?.id"> (you)</em>
+            <small>{{ a.activeSet ? 'Working on: ' + a.activeSet : 'Online' }}</small></span>
+        </div>
+      </mat-menu>
+    </ng-container>
+    <ng-container *ngIf="auth.isAdmin()">
+      <button type="button" class="chat-btn" (click)="chat.toggle(); scrollChat()" aria-label="Admin broadcast chat" title="Admin broadcast chat">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"></path></svg>
+        <span class="chat-badge" *ngIf="chat.unread()">{{ chat.unread() > 9 ? '9+' : chat.unread() }}</span>
+      </button>
+    </ng-container>
+    <ng-container *ngIf="auth.userSignal() as user; else guest">
+      <button type="button" class="avatar" [matMenuTriggerFor]="profileMenu" aria-label="Profile menu">{{ initials }}</button>
+      <mat-menu #profileMenu="matMenu" xPosition="before">
+        <div class="menu-user">
+          <strong>{{ user.name || user.email }}</strong>
+          <span class="role-badge" [class.admin]="user.role !== 'user'">{{ user.role === 'superadmin' ? 'Super Admin' : user.role === 'admin' ? 'Admin' : 'User' }}</span>
+        </div>
+        <button *ngIf="user.role === 'user'" mat-menu-item routerLink="/profile">My Profile</button>
+        <button *ngIf="user.role === 'user'" mat-menu-item routerLink="/dashboard">Dashboard</button>
+        <button *ngIf="user.role !== 'user'" mat-menu-item routerLink="/admin">Admin Dashboard</button>
+        <button mat-menu-item (click)="logout()">Logout</button>
+      </mat-menu>
+    </ng-container>
+
+    <ng-template #guest>
+      <button mat-stroked-button class="mode-btn" [class.active]="onLoginPage()" [attr.aria-current]="onLoginPage() ? 'page' : null" routerLink="/login">Log in</button>
+    </ng-template>
+  </div>
+</header>
+
+<section class="chat-panel" *ngIf="auth.isAdmin() && chat.open()" aria-label="Admin broadcast chat">
+  <header class="chat-head">
+    <strong>Admin broadcast</strong>
+    <span class="chat-sub">{{ presence.admins().length }} online</span>
+    <button type="button" class="chat-close" (click)="chat.toggle()" aria-label="Close chat">✕</button>
+  </header>
+  <div class="chat-body" id="admin-chat-body">
+    <p class="chat-empty" *ngIf="!chat.messages().length">No messages yet. Say hello to the other admins.</p>
+    <div class="chat-msg" *ngFor="let m of chat.messages()" [class.mine]="m.userId === auth.userSignal()?.id">
+      <small>{{ m.userId === auth.userSignal()?.id ? 'You' : m.name }} · {{ m.createdAt | date: 'd MMM, h:mm a' }}</small>
+      <div class="chat-bubble">{{ m.text }}</div>
+    </div>
+  </div>
+  <p class="chat-error" *ngIf="chat.error()">{{ chat.error() }}</p>
+  <form class="chat-form" (submit)="sendChat($event, box)">
+    <input #box type="text" maxlength="1000" placeholder="Message all admins…" autocomplete="off" />
+    <button type="submit" aria-label="Send">Send</button>
+  </form>
+</section>
+
+<router-outlet />

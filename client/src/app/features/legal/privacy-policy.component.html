@@ -1,0 +1,92 @@
+<main class="legal-page">
+  <header class="legal-heading">
+    <span class="eyebrow">LET'S CRACK ADRE</span>
+    <h1>Privacy Policy</h1>
+    <p class="lead">This policy explains what information we handle when you use our ADRE exam preparation website and how you can request deletion.</p>
+    <p class="policy-dates"><strong>Effective:</strong> 31 October 2026 <span aria-hidden="true">·</span> <strong>Last updated:</strong> 31 October 2026</p>
+  </header>
+
+  <article class="legal-content">
+    <section>
+      <h2>1. Who we are</h2>
+      <p>Let's Crack ADRE provides online exam-preparation materials, practice questions, tests, results and account features. This policy applies to the website and its related account and learning services.</p>
+    </section>
+
+    <section>
+      <h2>2. Information we collect</h2>
+      <ul>
+        <li><strong>Account details:</strong> your name, email address, password hash (not your plain-text password), account role, account creation time and last-login time. The account model also supports a phone number for legacy accounts.</li>
+        <li><strong>Authentication and security:</strong> failed-login counters and lockout state, refresh-session records, and the IP address associated with a refresh session. Access tokens are held in application memory in the browser; an HTTP-only refresh cookie is used to restore a session.</li>
+        <li><strong>Learning records:</strong> test and practice attempts, selected answers, questions reviewed, timing, scores, results and progress summaries. These records are linked to your account.</li>
+        <li><strong>Purchases:</strong> purchased practice packs, amounts and purchase times, payment order/payment references, and payment status.</li>
+        <li><strong>Messages and feedback:</strong> when you use the contact form or question-reporting features, we store the information you submit, such as your name, email address, message or report.</li>
+        <li><strong>Technical logs:</strong> the server logs request information such as IP address, requested path, time, response status and browser user-agent. The application does not define a fixed retention period for these operational logs.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>3. How we use information</h2>
+      <p>We use account and authentication data to create accounts, sign you in, protect sessions and recover passwords. We use your attempts and answers to run tests, show results and calculate your progress. We use purchase information to create and verify orders and provide the practice packs you purchased. We use messages and reports to respond to support requests and improve question quality, and technical information to operate, secure and troubleshoot the service.</p>
+    </section>
+
+    <section>
+      <h2>4. Storage and processing</h2>
+      <p>The application stores account, learning, purchase and message records in MongoDB. The service is hosted on a Hostinger VPS and uses MongoDB Atlas, as currently configured for this project. Passwords are stored as hashes. Authentication uses short-lived access tokens and refresh sessions.</p>
+    </section>
+
+    <section>
+      <h2>5. Service providers and integrations</h2>
+      <p>Depending on the feature you use, information may be processed by:</p>
+      <ul>
+        <li><strong>Hostinger:</strong> VPS infrastructure used to run the website/API and its operational logs.</li>
+        <li><strong>MongoDB Atlas:</strong> managed database infrastructure holding application records.</li>
+        <li><strong>Your configured SMTP email provider:</strong> delivery of password-reset and account-deletion codes, and contact-form notifications. Contact messages may be emailed to administrator recipients.</li>
+        <li><strong>Razorpay:</strong> payment order creation and payment verification. The payment integration sends an account identifier and pack details with an order; checkout also receives the account email for prefill. Razorpay handles payment data under its own terms and retention practices.</li>
+        <li><strong>Google Cloud Translation or MyMemory:</strong> when administrators use translation features, question text may be sent to the configured translation provider. These features process question content, not a student's test answers.</li>
+        <li><strong>OpenAI:</strong> when an administrator requests AI answer verification, the selected question text, answer options and related verification inputs are sent to the configured OpenAI API. This feature is for question review and does not send student account details or learning history.</li>
+      </ul>
+      <p>The codebase also contains a Twilio SMS provider stub, but that stub does not send SMS messages. We did not find an advertising, third-party analytics or crash-reporting SDK in the application source and dependency manifests reviewed. The progress charts shown in the app are calculated from your learning records.</p>
+    </section>
+
+    <section>
+      <h2>6. Sharing and disclosure</h2>
+      <p>We disclose information to the infrastructure and feature providers described above when needed to operate the service or when you use the related feature. Contact messages may be sent to configured administrator email recipients. We may also disclose information when required by applicable law or to protect the service, users or other people. We do not sell account or learning data in the application code reviewed.</p>
+    </section>
+
+    <section>
+      <h2>7. Retention</h2>
+      <p>We keep account and learning records while the account is active. When an account deletion is completed, the application deletes the account, its learning attempts, answers, scores, payment records, reviews, question reports, refresh sessions, pending email/phone verification codes, password-reset codes and contact messages associated with that account email in one database transaction. A pseudonymous deletion audit record is configured to expire after 90 days; MongoDB TTL cleanup is asynchronous and may occur later.</p>
+      <p>Operational logs, infrastructure backups, email copies already delivered, and records held independently by payment or infrastructure providers are not removed by that database transaction. This project does not define a fixed expiry period for those logs or backups; their retention depends on the applicable provider and deployment settings. Razorpay may retain payment records under its own policies.</p>
+    </section>
+
+    <section>
+      <h2>8. Security</h2>
+      <p>The application uses password hashing, access-token authentication, HTTP-only refresh cookies, login lockouts and rate limits on authentication and deletion verification. No online service can guarantee absolute security. Keep your password private and contact us if you suspect unauthorized access.</p>
+    </section>
+
+    <section>
+      <h2>9. Your choices and account deletion</h2>
+      <p>You can review account information in your profile and request deletion from account settings or the public <a routerLink="/delete-account">Account Deletion page</a>. A public deletion request is not completed until you enter the verification code sent to the account email. If you cannot access your account email or need help with another privacy request, contact <a href="mailto:support@letscrackadre.com">support&#64;letscrackadre.com</a>.</p>
+    </section>
+
+    <section>
+      <h2>10. Children and age restrictions</h2>
+      <p>The service is for exam preparation and does not currently implement an age-verification check. If you are below the age at which you may consent to online services in your location, involve a parent or guardian before creating or using an account. A parent or guardian who believes a child has provided personal information can contact us to request review and deletion.</p>
+    </section>
+
+    <section>
+      <h2>11. Changes to this policy</h2>
+      <p>We may update this policy when the service or its data practices change. We will update the date at the top of this page. Please review this page periodically for the current version.</p>
+    </section>
+
+    <section>
+      <h2>12. Contact</h2>
+      <p>For privacy questions or requests, email <a href="mailto:support@letscrackadre.com">support&#64;letscrackadre.com</a>.</p>
+    </section>
+  </article>
+
+  <nav class="legal-crosslinks" aria-label="Related policies">
+    <a routerLink="/delete-account">Request account deletion <span aria-hidden="true">→</span></a>
+    <a routerLink="/">Back to Let's Crack ADRE</a>
+  </nav>
+</main>

@@ -1,0 +1,179 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.page-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  box-sizing: border-box;
+  background:
+    linear-gradient(135deg, rgba(10, 28, 48, 0.82) 0%, rgba(23, 59, 91, 0.7) 55%, rgba(10, 28, 48, 0.85) 100%),
+    url('/ADRE%203.0%20Assam%20Study%20Banner-1.png?v=1') center / cover no-repeat;
+}
+
+.auth-card {
+  width: min(100%, 440px);
+  padding: 28px 28px 24px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 28px 70px rgba(5, 15, 30, 0.5);
+  box-sizing: border-box;
+  backdrop-filter: blur(6px);
+}
+
+.logo-link {
+  display: block;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.logo {
+  width: 190px;
+  max-width: 70%;
+  height: auto;
+}
+
+h1 {
+  margin: 8px 0 4px;
+  text-align: center;
+  font-size: clamp(1.5rem, 2vw, 1.9rem);
+  line-height: 1.2;
+  color: #173b5b;
+}
+
+.subtitle {
+  color: #54657d;
+  margin: 0 0 18px;
+  text-align: center;
+  line-height: 1.5;
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
+.mode-toggle {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin: 0 0 18px;
+  border-radius: 999px;
+  background: #eef2f7;
+}
+
+.mode-toggle button {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  color: #53657d;
+  font: inherit;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.mode-toggle button.active {
+  background: #173b5b;
+  color: #fff;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.full-width {
+  width: 100%;
+  --mdc-outlined-text-field-container-height: 56px;
+}
+
+::ng-deep .mat-mdc-form-field-infix {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+}
+
+::ng-deep .mat-mdc-text-field-wrapper {
+  min-height: 56px;
+}
+
+.otp-input {
+  letter-spacing: 0.5em;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+button[mat-flat-button] {
+  min-height: 48px;
+  font-weight: 600;
+  border-radius: 12px;
+}
+
+.submit {
+  margin-top: 4px;
+}
+
+.link-btn {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2f6fdb;
+  cursor: pointer;
+}
+
+.link-btn:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.link-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.align-right {
+  align-self: flex-end;
+  margin-top: -8px;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.footer-links .link-btn:only-child {
+  margin: 0 auto;
+}
+
+.legal-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 22px;
+  font-size: 0.82rem;
+}
+
+.legal-links a {
+  color: #53657d;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .page-shell {
+    padding: 16px;
+  }
+
+  .auth-card {
+    padding: 22px 18px;
+  }
+}

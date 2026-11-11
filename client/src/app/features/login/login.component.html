@@ -1,0 +1,48 @@
+<div class="page-shell">
+  <div class="auth-card">
+    <a routerLink="/" class="logo-link" aria-label="Let's Crack ADRE home">
+      <img class="logo" src="logo.png" alt="Let's Crack ADRE" width="500" height="243" />
+    </a>
+
+    <h1>{{ title }}</h1>
+    <p class="subtitle">{{ subtitle }}</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" autocomplete="on">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" autocomplete="email" [readonly]="mode === 'reset'" />
+        <mat-error>Enter a valid email address.</mat-error>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="mode === 'reset'" appearance="outline" class="full-width">
+        <mat-label>6-digit code</mat-label>
+        <input matInput formControlName="otp" inputmode="numeric" maxlength="6" autocomplete="one-time-code" class="otp-input" />
+        <mat-error>Enter the 6-digit code from your email.</mat-error>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="mode !== 'forgot'" appearance="outline" class="full-width">
+        <mat-label>{{ mode === 'reset' ? 'New password' : 'Password' }}</mat-label>
+        <input matInput [type]="showPassword ? 'text' : 'password'" formControlName="password"
+          [attr.autocomplete]="mode === 'login' ? 'current-password' : 'new-password'" />
+        <button mat-button matSuffix type="button" (click)="showPassword = !showPassword" [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+          {{ showPassword ? 'Hide' : 'Show' }}
+        </button>
+        <mat-hint *ngIf="mode !== 'login'">At least 4 characters.</mat-hint>
+        <mat-error>{{ mode === 'login' ? 'Enter your password.' : 'Use at least 4 characters.' }}</mat-error>
+      </mat-form-field>
+
+      <button type="button" class="link-btn align-right" *ngIf="mode === 'login'" (click)="setMode('forgot')">Forgot password?</button>
+
+      <button mat-flat-button color="primary" class="full-width submit" type="submit" [disabled]="isSubmitting">{{ buttonLabel }}</button>
+    </form>
+
+    <div class="footer-links" *ngIf="mode === 'forgot' || mode === 'reset'">
+      <button type="button" class="link-btn" *ngIf="mode === 'reset'" [disabled]="isSubmitting" (click)="resendCode()">Resend code</button>
+      <button type="button" class="link-btn" (click)="setMode('login')">← Back to sign in</button>
+    </div>
+    <nav class="legal-links" aria-label="Legal and account links">
+      <a routerLink="/privacy-policy">Privacy Policy</a>
+      <a routerLink="/delete-account">Delete Account</a>
+    </nav>
+  </div>
+</div>

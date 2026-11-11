@@ -1,0 +1,61 @@
+<div class="police-page">
+  <header class="forest-hero">
+    <div>
+      <span class="eyebrow">SLPRB Assam preparation</span>
+      <h1>Assam Police<br /><span>and Forest</span></h1>
+      <p class="lead">Build your foundation. Practise with purpose. Prepare for the Constable written test with subject-wise sessions and 10 full-length mocks.</p>
+      <div class="actions">
+        <button mat-flat-button type="button" (click)="scrollToPricing()">Explore {{ plans.length }} Test Series</button>
+        <a mat-stroked-button [routerLink]="startLink">{{ auth.userSignal() ? 'Open dashboard' : 'Create your account' }}</a>
+      </div>
+      <p class="small">One-time purchases. Separate from ADRE Test Series.</p>
+    </div>
+    <aside class="pattern-card">
+      <span class="eyebrow">Constable written-test pattern</span>
+      <div class="big-number">100 <small>MCQs</small></div>
+      <div class="metrics"><div><strong>50</strong><span>Total marks</span></div><div><strong>0.5</strong><span>Per correct answer</span></div><div><strong>Zero</strong><span>Negative marking</span></div></div>
+      <p>Class IX-X level. Our mocks use a <strong>90-minute practice timer</strong>, not an official exam duration.</p>
+    </aside>
+  </header>
+
+  <section class="section">
+    <div class="section-heading"><span class="eyebrow">Know the recruitment</span><h2>One recruitment drive. Many opportunities.</h2></div>
+    <p>The supplied February 2026 recruitment summary lists <strong>5,734 vacancies</strong> across Assam Police, APRO, Forest, Fire &amp; Emergency Services, Prison, DGCD &amp; CGHG and Commando Battalions, coordinated by SLPRB Assam.</p>
+    <div class="vacancies"><article *ngFor="let item of vacancies"><strong>{{ item.value }}</strong><span>{{ item.label }}</span></article></div>
+    <div class="notice"><strong>Recruitment information, not a live application notice.</strong> The supplied reopening window ended on 28 February 2026, with edits from 1-5 March 2026. Vacancies, eligibility and selection rules vary by post. Verify the current official notification at <a href="https://slprbassam.in/" target="_blank" rel="noopener noreferrer">SLPRB Assam</a>.</div>
+  </section>
+
+  <section class="section tint">
+    <span class="eyebrow">Your preparation roadmap</span><h2>Five subjects. A focused foundation.</h2>
+    <p>These are the subject areas listed for the Constable written test. Topic suggestions below guide practice; they are not a separate official syllabus.</p>
+    <div class="subject-grid"><article class="card" *ngFor="let subject of subjects; let i = index"><span class="subject-number">0{{ i + 1 }}</span><h3>{{ subject.name }}</h3><p>{{ subject.text }}</p></article></div>
+    <div class="notice"><strong>Launch scope:</strong> Both Test Series currently follow the documented Constable written-test subjects and pattern. SI/Forest-specific patterns are not included yet. A Forest or SI applicant should check the post-specific notification before choosing these Test Series.</div>
+  </section>
+
+  <section id="police-pricing" class="section">
+    <span class="eyebrow">Choose your training</span><h2>Your Test Series. Your next step.</h2>
+    <p>{{ note }}</p>
+    <div class="plan-grid">
+      <article class="card plan" *ngFor="let plan of plans" [class.featured]="plan.highlight">
+        <img *ngIf="packageImageFor(plan.id) as image" class="package-image" [src]="image" alt="" aria-hidden="true" loading="lazy" decoding="async">
+        <span class="tag">{{ plan.id === 'police-subject' ? 'Build your foundation' : 'Practise the full paper' }}</span>
+        <h3>{{ plan.name }}</h3>
+        <p *ngIf="plan.description">{{ plan.description }}</p>
+        <div class="price"><del *ngIf="pricing.originalFor(plan.id) as mrp">{{ mrp }}</del> {{ pricing.priceFor(plan.id) }} <small *ngIf="pricing.savingsFor(plan.id) as off">{{ off }}</small></div>
+        <p class="small">{{ plan.period }}</p>
+        <ul><li *ngFor="let perk of plan.perks">{{ perk }}</li></ul>
+        <a *ngIf="pricing.isOwned(plan.id); else purchase" mat-flat-button [routerLink]="startLink">Purchased - open dashboard</a>
+        <ng-template #purchase><a mat-flat-button [disabled]="!pricing.onSale(plan)" [routerLink]="['/checkout', plan.id]">{{ pricing.onSale(plan) ? plan.cta : 'Not on sale' }}</a></ng-template>
+      </article>
+    </div>
+  </section>
+
+  <section class="section tint">
+    <h2>Before you begin</h2>
+    <div class="subject-grid">
+      <article class="card"><h3>Check eligibility by post</h3><p>The supplied notice requires Indian citizenship, Assam residency, local-language proficiency and Assam Employment Exchange registration. Education and age limits differ, including post-specific relaxations. Use the official notification for your post.</p></article>
+      <article class="card"><h3>Written preparation is one stage</h3><p>Constable selection also includes document checks, physical efficiency and standards, medical checks and an oral stage. These Test Series cover written practice only, not physical training or a selection guarantee.</p></article>
+      <article class="card"><h3>Language and availability</h3><p>The supplied notice lists Assamese, Bodo, Bengali and English for the official Constable paper. This platform supports English and Assamese content. Mock papers become playable after all 100 active questions are published.</p></article>
+    </div>
+  </section>
+</div>

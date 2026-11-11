@@ -1,0 +1,210 @@
+:host {
+  display: block;
+}
+
+.page-shell {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+mat-card {
+  padding: 22px;
+  border-radius: 18px;
+  margin-bottom: 20px;
+}
+
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  background: linear-gradient(135deg, #eaf3ff, #f4ecfb);
+}
+
+.avatar-lg {
+  width: 76px;
+  height: 76px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #5b8def, #7a7ff0);
+  color: #fff;
+  font-size: 1.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.identity {
+  flex: 1;
+  min-width: 180px;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 1.5rem;
+}
+
+h3 {
+  margin: 0 0 14px;
+  color: #173b5b;
+}
+
+.role-badge {
+  background: #eaf3ff;
+  color: #173b5b;
+  border-radius: 999px;
+  padding: 3px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.role-badge.admin {
+  background: #fff1d6;
+  color: #8a5a00;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 10px;
+  margin: 0;
+}
+
+dt {
+  color: #53657d;
+}
+
+dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.stat-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.value {
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+.label {
+  color: #53657d;
+  font-size: 0.85rem;
+}
+
+.strengths ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.strengths li {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.pct {
+  font-weight: 700;
+  color: #8a5a00;
+}
+
+.pct.good {
+  color: #1f7a46;
+}
+
+.pct.low {
+  color: #b3261e;
+}
+
+.account-settings {
+  border: 1px solid #eed7d3;
+}
+
+.account-settings h4 {
+  margin: 22px 0 8px;
+  color: #8f2924;
+}
+
+.account-settings p {
+  color: #53657d;
+  line-height: 1.65;
+}
+
+.account-settings a {
+  color: #805c16;
+}
+
+.account-settings form {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+}
+
+.account-settings form > label:not(.delete-confirmation) {
+  font-weight: 600;
+}
+
+.account-settings input[type="password"] {
+  box-sizing: border-box;
+  width: min(100%, 380px);
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #cfd7df;
+  border-radius: 8px;
+  font: inherit;
+}
+
+.delete-confirmation {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 6px;
+}
+
+.delete-confirmation input {
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  accent-color: #8f2924;
+}
+
+.field-error,
+.deletion-error {
+  color: #a52c25 !important;
+  font-size: 13px;
+}
+
+.account-settings form button {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: #9c322b;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.account-settings form button:disabled {
+  opacity: .65;
+  cursor: wait;
+}

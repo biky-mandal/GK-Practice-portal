@@ -1,0 +1,248 @@
+:host {
+  display: block;
+  color: #172f46;
+  --legal-muted: #647181;
+  --legal-line: #e2e7ec;
+}
+
+.legal-page {
+  width: min(100% - 40px, 900px);
+  margin: 0 auto;
+  padding: clamp(36px, 7vw, 76px) 0;
+}
+
+.legal-heading {
+  padding: clamp(26px, 5vw, 48px);
+  border: 1px solid #e8e4d9;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #fcfbf8, #f3f6f7);
+}
+
+.eyebrow {
+  color: #9a7736;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+
+h1 {
+  margin: 14px 0;
+  font-size: clamp(34px, 6vw, 52px);
+  letter-spacing: -.045em;
+}
+
+.lead {
+  max-width: 660px;
+  color: #526579;
+  font-size: clamp(15px, 2.5vw, 18px);
+  line-height: 1.7;
+}
+
+.policy-dates {
+  margin: 22px 0 0;
+  color: var(--legal-muted);
+  font-size: 13px;
+}
+
+.policy-dates span {
+  padding: 0 8px;
+}
+
+.legal-content {
+  padding: 10px clamp(2px, 2vw, 16px);
+}
+
+.legal-content section {
+  padding: 25px 0;
+  border-bottom: 1px solid var(--legal-line);
+}
+
+.legal-content h2 {
+  margin: 0 0 12px;
+  color: #173b5b;
+  font-size: clamp(19px, 3vw, 23px);
+  letter-spacing: -.025em;
+}
+
+.legal-content p,
+.legal-content li {
+  color: #42586c;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.legal-content p:last-child {
+  margin-bottom: 0;
+}
+
+.legal-content ul {
+  display: grid;
+  gap: 9px;
+  padding-left: 22px;
+}
+
+.legal-content a,
+.legal-crosslinks a {
+  color: #805c16;
+  font-weight: 650;
+  text-underline-offset: 3px;
+}
+
+.legal-content a:hover,
+.legal-crosslinks a:hover {
+  color: #173b5b;
+}
+
+.legal-crosslinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 25px 4px 0;
+  font-size: 14px;
+}
+
+.delete-panel {
+  margin-top: 24px;
+  padding: clamp(24px, 5vw, 40px);
+  border: 1px solid var(--legal-line);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 14px 38px #172f460b;
+}
+
+.delete-panel h2 {
+  margin: 0 0 10px;
+  color: #173b5b;
+  font-size: 22px;
+}
+
+.delete-panel p,
+.delete-panel li {
+  color: #526579;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.delete-panel ul {
+  padding-left: 20px;
+}
+
+.deletion-form {
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.deletion-form > label {
+  display: grid;
+  gap: 8px;
+  color: #42586c;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.deletion-form input[type="email"],
+.deletion-form input[type="text"] {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  padding: 11px 13px;
+  border: 1px solid #cfd7df;
+  border-radius: 9px;
+  color: #172f46;
+  font: inherit;
+}
+
+.deletion-form input:focus-visible {
+  outline: 3px solid #b5c4af;
+  outline-offset: 2px;
+}
+
+.deletion-form .consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.consent input {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: #173b5b;
+  flex: 0 0 auto;
+}
+
+.deletion-form button {
+  justify-self: start;
+  min-height: 48px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 9px;
+  background: #173b5b;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.deletion-form button:disabled {
+  background: #9ba8b2;
+  cursor: wait;
+}
+
+.deletion-form .secondary-button {
+  min-height: 36px;
+  padding: 0;
+  background: transparent;
+  color: #805c16;
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.deletion-form .secondary-button:disabled {
+  background: transparent;
+}
+
+.form-message {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 9px;
+  background: #edf5ea;
+  color: #285d35 !important;
+}
+
+.form-error {
+  margin: 0;
+  color: #a52c25 !important;
+}
+
+.field-error {
+  color: #a52c25;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.complete-state {
+  padding: 16px;
+  border-radius: 12px;
+  background: #edf5ea;
+}
+
+.complete-state h2 {
+  color: #285d35;
+}
+
+@media (max-width: 520px) {
+  .legal-page {
+    width: min(100% - 28px, 900px);
+    padding-top: 24px;
+  }
+
+  .legal-crosslinks {
+    flex-direction: column;
+  }
+}

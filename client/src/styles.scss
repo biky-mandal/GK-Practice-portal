@@ -1,0 +1,72 @@
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background: #f4f7fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.package-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 10px;
+  margin-bottom: 18px;
+}
+
+.global-loading {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 2000;
+  pointer-events: none;
+
+  .mat-mdc-progress-bar { height: 3px; }
+
+  .loading-chip {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(17, 24, 39, 0.88);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  }
+
+  .loading-dot {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: app-spin 0.8s linear infinite;
+  }
+}
+
+.section-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 12px;
+  color: #475569;
+  font-size: 14px;
+
+  &.page-loading { min-height: 200px; }
+}
+
+@keyframes app-spin {
+  to { transform: rotate(360deg); }
+}

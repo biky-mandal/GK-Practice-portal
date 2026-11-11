@@ -1,0 +1,115 @@
+<div class="page-shell">
+  <mat-card class="result-card">
+    <div class="header-row">
+      <div>
+        <div class="eyebrow">Assessment</div>
+        <h1>Result Summary</h1>
+      </div>
+      <button mat-stroked-button color="primary" [routerLink]="['/dashboard']" [queryParams]="fromRecentTests ? { view: 'results' } : {}">{{ fromRecentTests ? 'Back to Recent Tests' : 'Back to Dashboard' }}</button>
+    </div>
+
+    <div *ngIf="isLoading" class="empty-state">Loading your result...</div>
+    <div *ngIf="loadError" class="empty-state" role="alert">Could not load this result. <button mat-button type="button" (click)="loadResult()">Retry</button></div>
+
+    <div *ngIf="!isLoading && !loadError && result">
+      <div class="score-block">
+        <div class="score-value">{{ result.score }}/{{ result.maxMarks ?? result.totalQuestions }}</div>
+        <div class="score-label">Your score</div>
+      </div>
+
+      <div class="summary-grid">
+        <mat-card>
+          <div class="label">Correct</div>
+          <div class="value">{{ result.correctAnswers }}</div>
+        </mat-card>
+        <mat-card>
+          <div class="label">Incorrect</div>
+          <div class="value">{{ result.incorrectAnswers }}</div>
+        </mat-card>
+        <mat-card>
+          <div class="label">Accuracy</div>
+          <div class="value">{{ result.percentage }}%</div>
+        </mat-card>
+        <mat-card>
+          <div class="label">Unanswered</div>
+          <div class="value">{{ result.unansweredQuestions }}</div>
+        </mat-card>
+      </div>
+
+      <div class="charts-grid">
+        <mat-card>
+          <h3>Overall performance</h3>
+          <app-pie-chart [slices]="outcomeSlices" title="Answer outcomes"></app-pie-chart>
+        </mat-card>
+        <mat-card>
+          <h3>Accuracy by subject</h3>
+          <app-bar-chart [bars]="subjectBars" [max]="100" unit="%"></app-bar-chart>
+        </mat-card>
+        <mat-card *ngIf="timeBars.length">
+          <h3>Time</h3>
+          <app-bar-chart [bars]="timeBars" [max]="timeBars[1].value" unit=" min"></app-bar-chart>
+        </mat-card>
+      </div>
+
+      <div class="answers-panel">
+        <h2>Question review</h2>
+        <p *ngIf="result.unavailableQuestions" role="status">{{ result.unavailableQuestions }} question(s) are no longer available for review.</p>
+        <div class="tabs">
+          <button type="button" *ngFor="let t of tabs" class="tab" [class.active]="tab === t.key" [ngClass]="t.key" (click)="tab = t.key">
+            {{ t.label }} <span class="count">{{ count(t.key) }}</span>
+          </button>
+        </div>
+
+        <div *ngIf="sections.length === 0" class="empty-state">No questions in this category.</div>
+
+        <section *ngFor="let section of sections" class="subject-section">
+          <h3 class="section-title">{{ section.subject }} <span class="count">{{ section.items.length }}</span></h3>
+          <div *ngFor="let item of section.items" class="review-item">
+            <div class="question-head">
+              <strong>Q{{ item.number }}</strong>
+              <span>
+                <span *ngIf="item.markedForReview" class="status review">Marked for review</span>
+                <span class="status" [class.correct]="item.status === 'correct'" [class.wrong]="item.status === 'incorrect'" [class.skipped]="item.status === 'unanswered'">
+                  {{ item.status === 'correct' ? 'Correct' : item.status === 'incorrect' ? 'Incorrect' : 'Unanswered' }}
+                </span>
+              </span>
+            </div>
+            <p [appMath]="item.questionText"></p>
+            <p *ngIf="item.translation?.questionText" class="translation" lang="as" [appMath]="item.translation?.questionText"></p>
+            <div class="cat-tags"><span *ngFor="let c of item.categories" class="cat-tag">{{ c }}</span></div>
+            <ol class="answer-options" type="A" aria-label="Answer options">
+              <li *ngFor="let option of item.options; let i = index" [class.right]="i === item.correctOption" [class.selected]="i === item.selectedAnswer">
+                <span [appMath]="option"></span>
+                <span *ngIf="item.translation?.options?.[i]" class="translation" lang="as" [appMath]="item.translation?.options?.[i]"></span>
+                <span *ngIf="i === item.selectedAnswer" class="option-label">Your answer</span>
+                <span *ngIf="i === item.correctOption" class="option-label">Correct answer</span>
+              </li>
+            </ol>
+            <div class="answer-line">Your answer: <strong [appMath]="item.selectedAnswer === undefined ? 'Not answered' : item.options[item.selectedAnswer]"></strong>
+              <span *ngIf="item.selectedAnswer !== undefined && item.translation?.options?.[item.selectedAnswer]" class="translation" lang="as" [appMath]="item.translation?.options?.[item.selectedAnswer]"></span>
+            </div>
+            <div class="answer-line">Correct answer: <strong [appMath]="item.options[item.correctOption]"></strong>
+              <span *ngIf="item.translation?.options?.[item.correctOption]" class="translation" lang="as" [appMath]="item.translation?.options?.[item.correctOption]"></span>
+            </div>
+            <div *ngIf="item.explanation" class="answer-line">Explanation: <span [appMath]="item.explanation"></span>
+              <span *ngIf="item.translation?.explanation" class="translation" lang="as" [appMath]="item.translation?.explanation"></span>
+            </div>
+            <ul *ngIf="hasOptionExplanations(item)" class="option-explanations">
+              <ng-container *ngFor="let option of item.options; let i = index">
+                <li *ngIf="optionNote(item, i)" [class.right]="i === item.correctOption">
+                  <strong [appMath]="option"></strong><br /><span [appMath]="optionNote(item, i)"></span>
+                  <span *ngIf="item.translation?.optionExplanations?.[i]" class="translation" lang="as" [appMath]="item.translation?.optionExplanations?.[i]"></span>
+                </li>
+              </ng-container>
+            </ul>
+            <div *ngIf="item.commonMisconceptions?.length" class="answer-line">
+              Common misconceptions:
+              <ul class="misconceptions"><li *ngFor="let m of item.commonMisconceptions; let i = index">{{ m }}
+                <span *ngIf="item.translation?.commonMisconceptions?.[i]" class="translation" lang="as">{{ item.translation?.commonMisconceptions?.[i] }}</span></li></ul>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </mat-card>
+</div>

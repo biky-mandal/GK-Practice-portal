@@ -1,0 +1,191 @@
+<div class="adre">
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <a class="back-link" routerLink="/">Home <span aria-hidden="true">/</span> ADRE 3.0</a>
+        <span class="pill"><span aria-hidden="true">✦</span> Your next chapter starts here</span>
+        <h1>ADRE 3.0<br /><span class="accent">Prepare with purpose.</span></h1>
+        <p>Syllabus, exam pattern and timed practice for the Assam Direct Recruitment Examination: Grade-III and Grade-IV posts across Government of Assam departments.</p>
+        <div class="price-chip" *ngIf="subjectPlan as subject">
+          <span class="price-chip-label">{{ subject.name }}</span>
+          <strong>{{ pricing.priceFor('subject') }}</strong><span>one-time payment. No subscription.</span>
+        </div>
+        <div class="hero-cta">
+          <button mat-flat-button class="cta" (click)="scrollTo('pricing')">Explore Test Series <span aria-hidden="true">↗</span></button>
+          <button mat-stroked-button class="ghost" [routerLink]="startLink">{{ auth.userSignal() ? 'Open dashboard' : 'Try free sample' }}</button>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="roadmap-top"><span class="roadmap-icon" aria-hidden="true">✦</span><span>FOCUS TODAY.<br /><strong>GO FURTHER TOMORROW.</strong></span></div>
+        <h2>Your preparation,<br />with a clear direction.</h2>
+        <ol class="roadmap">
+          <li><span class="roadmap-number">01</span><div><strong>Build your foundation</strong><p>Subject-wise practice, one topic at a time.</p></div></li>
+          <li><span class="roadmap-number">02</span><div><strong>Understand the real paper</strong><p>10 PYQ papers from ADRE 1.0 and 2.0.</p></div></li>
+          <li><span class="roadmap-number">03</span><div><strong>Find your exam-day rhythm</strong><p>10 full-length mocks to practise and review.</p></div></li>
+        </ol>
+        <div class="roadmap-foot"><span aria-hidden="true">✓</span> Your choice of Test Series and preparation.</div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="page-nav" aria-label="ADRE page sections">
+    <button type="button" (click)="scrollTo('about')">Overview</button>
+    <button type="button" (click)="scrollTo('pattern')">Exam pattern</button>
+    <button type="button" (click)="scrollTo('syllabus')">Syllabus</button>
+    <button type="button" (click)="scrollTo('pricing')">Test Series</button>
+    <button type="button" (click)="scrollTo('faq')">FAQs</button>
+  </nav>
+
+  <section id="about" class="section">
+    <span class="eyebrow">KNOW YOUR EXAM</span>
+    <h2>About ADRE 3.0</h2>
+    <div class="about">
+      <p>
+        The Assam Direct Recruitment Examination (ADRE) is the Government of Assam’s large-scale recruitment process for
+        Grade-III and Grade-IV vacancies across state departments. ADRE 2.0 was conducted in 2024 for 12,673 vacancies, and
+        appointment letters were distributed on 9 and 10 January 2026.
+      </p>
+      <p>
+        The ADRE 3.0 notification is expected after the Assam Assembly elections (April to May 2026), as confirmed by the
+        Chief Minister. Reports suggest 10,000 to 15,000 vacancies for both Grade-III and Grade-IV.
+      </p>
+      <div class="notice">
+        <strong>Syllabus status:</strong> the official ADRE 3.0 syllabus has not been released. Details below follow ADRE 2.0
+        (syllabus released 15 July 2024) and the SLRC framework. ADRE 3.0 may introduce changes, including a two-phase
+        (Preliminary and Main) exam. This page will be updated when SLRC publishes the official syllabus.
+      </div>
+    </div>
+    <dl class="facts">
+      <div class="fact" *ngFor="let f of facts">
+        <dt>{{ f.label }}</dt>
+        <dd>{{ f.value }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section id="pattern" class="section tint">
+    <span class="eyebrow">FIND THE PAPER THAT FITS YOUR POST</span>
+    <h2>Exam pattern by post</h2>
+    <p class="sub">SLRC conducts five written papers: three for Grade-III and two for Grade-IV. You appear only in the paper matching your post.</p>
+    <div class="tabs">
+      <button type="button" *ngFor="let p of papers; let i = index" class="tab" [class.active]="selectedPaper === i" [attr.aria-pressed]="selectedPaper === i" aria-controls="paper-details" (click)="selectedPaper = i">
+        <small>{{ p.grade }}</small>{{ p.name }}
+      </button>
+    </div>
+
+    <div id="paper-details" class="paper card">
+      <span class="eyebrow">PAPER AT A GLANCE</span>
+      <h3>{{ paper.grade }}: {{ paper.name }}</h3>
+      <div class="paper-stats">
+        <div><span>Duration</span><strong>{{ paper.duration }}</strong></div>
+        <div><span>Questions</span><strong>{{ paper.questions }} MCQs</strong></div>
+        <div><span>Full marks</span><strong>{{ paper.marks }}</strong></div>
+      </div>
+      <p class="negative"><strong>Negative marking:</strong> {{ paper.negative }}</p>
+
+      <table *ngIf="paper.breakdown" class="marks-table">
+        <caption>Subject-wise distribution for {{ paper.name }}</caption>
+        <thead><tr><th>Subject</th><th>MCQs</th><th>Marks</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let row of paper.breakdown"><td>{{ row.name }}</td><td>{{ row.mcq }}</td><td>{{ row.marks }}</td></tr>
+          <tr class="total"><td>Total</td><td>{{ paper.questions }}</td><td>{{ paper.marks }}</td></tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="!paper.breakdown" class="subject-chips">
+        <span *ngFor="let s of paper.subjects" class="chip">{{ s }}</span>
+      </div>
+      <p class="paper-note">{{ paper.note }}</p>
+    </div>
+  </section>
+
+  <section class="pyq-band">
+    <div class="pyq-inner">
+      <span class="pyq-tag">THE PREVIOUS YEAR COLLECTION</span>
+      <h2>Real papers.<br /><span>A stronger perspective.</span></h2>
+      <p>{{ pyq.text }}</p>
+      <div class="pyq-years">
+        <div class="pyq-year" *ngFor="let y of pyqYears">
+          <strong>{{ y }}</strong>
+          <ul><li *ngFor="let p of pyqPapers">{{ p }}</li></ul>
+        </div>
+      </div>
+      <ul class="pyq-points"><li *ngFor="let x of pyq.points">✓ {{ x }}</li></ul>
+      <button mat-flat-button class="pyq-btn" (click)="scrollTo('pricing')">Unlock all 10 PYQ papers</button>
+    </div>
+  </section>
+
+  <section id="syllabus" class="section">
+    <span class="eyebrow">BUILD YOUR FOUNDATION</span>
+    <h2>Subject-wise syllabus</h2>
+    <p class="sub">Expected topics based on previous editions.</p>
+    <div class="grid three">
+      <article class="card" *ngFor="let s of syllabus">
+        <div class="icon">{{ s.icon }}</div>
+        <h3>{{ s.subject }}</h3>
+        <p>{{ s.text }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section tint">
+    <span class="eyebrow">A BETTER WAY TO PRACTISE</span>
+    <h2>Less guesswork. More progress.</h2>
+    <p class="sub">Choose subject practice, previous year papers or mocks. Each is a separate one-time purchase, with tools that help you learn from every session.</p>
+    <div class="grid three">
+      <article class="card" *ngFor="let item of included">
+        <div class="icon">{{ item.icon }}</div>
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.text }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="pricing" class="section">
+    <span class="eyebrow">THE ADRE COLLECTION</span>
+    <h2>Pay once. Practise for good.</h2>
+    <p class="sub">{{ note }}<br />{{ languageNote }}</p>
+    <div class="grid three">
+      <article class="card plan" *ngFor="let p of plans" [ngClass]="'plan-' + p.id">
+        <img *ngIf="packageImageFor(p.id) as image" class="package-image" [src]="image" alt="" aria-hidden="true" loading="lazy" decoding="async">
+        <div class="plan-top"><span class="badge">English + অসমীয়া</span><span class="plan-label">{{ p.id === 'subject' ? 'BUILD' : p.id === 'pyq' ? 'UNDERSTAND' : 'SIMULATE' }}</span></div>
+        <h3>{{ p.name }}</h3>
+        <p *ngIf="p.description">{{ p.description }}</p>
+        <div class="price">
+          <span *ngIf="pricing.originalFor(p.id) as mrp" class="mrp">{{ mrp }}</span>
+          <span class="now">{{ pricing.priceFor(p.id) }}</span>
+          <span *ngIf="pricing.savingsFor(p.id) as off" class="off">{{ off }}</span>
+          <small>{{ pricing.originalFor(p.id) ? 'Limited-time offer · ' : '' }}{{ p.period }}</small>
+        </div>
+        <ul>
+          <li *ngFor="let perk of p.perks">✓ {{ perk }}</li>
+        </ul>
+        <ng-container *ngIf="pricing.isOwned(p.id); else buyBtn">
+          <button mat-flat-button class="full" type="button" disabled>Purchased</button>
+          <button mat-flat-button color="primary" class="full" type="button" routerLink="/dashboard">Go to dashboard</button>
+        </ng-container>
+        <ng-template #buyBtn>
+          <button mat-flat-button [color]="p.highlight ? 'primary' : undefined" class="full" [disabled]="!pricing.onSale(p)" [routerLink]="['/checkout', p.id]">{{ pricing.onSale(p) ? p.cta : 'Not on sale' }}</button>
+        </ng-template>
+      </article>
+    </div>
+  </section>
+
+  <section id="faq" class="section tint">
+    <span class="eyebrow">A LITTLE MORE CLARITY</span>
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details *ngFor="let f of faqs">
+        <summary>{{ f.q }}</summary>
+        <p>{{ f.a }}</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <span class="eyebrow">YOUR NEXT STEP STARTS SMALL</span>
+    <h2>Make today<br /><span>your starting point.</span></h2>
+    <p>A focused session. A clearer direction. Keep moving towards your goal.</p>
+    <button mat-flat-button class="cta" [routerLink]="startLink">{{ auth.userSignal() ? 'Go to dashboard' : 'Start free practice' }}</button>
+  </section>
+</div>
